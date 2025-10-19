@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .payment-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .pay-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        .pay-button:hover {
+            background-color: #0056b3;
+        }
+        .pay-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0;
+        }
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .plan-section {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .plan-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>Payment Test Page</h1>
+        <p class="description">Test the Cashfree payment integration with different plans</p>
+        
+        <div id="status" class="status"></div>
+        
+        <!-- Starter Plan -->
+        <div class="plan-section">
+            <h3>Starter Plan</h3>
+            <div class="amount">₹99</div>
+            <p>10 Credits - Perfect for trying out</p>
+            <button class="pay-button" onclick="initiatePayment('starter', 99)">Pay ₹99</button>
+        </div>
+        
+        <!-- Monthly Plan -->
+        <div class="plan-section">
+            <h3>Monthly Saver</h3>
+            <div class="amount">₹299</div>
+            <p>50 Credits - Best value for regular users</p>
+            <button class="pay-button" onclick="initiatePayment('monthly', 299)">Pay ₹299</button>
+        </div>
+        
+        <!-- Power Plan -->
+        <div class="plan-section">
+            <h3>Power Plan</h3>
+            <div class="amount">₹799</div>
+            <p>150 Credits - For heavy users</p>
+            <button class="pay-button" onclick="initiatePayment('power', 799)">Pay ₹799</button>
+        </div>
+        
+        <!-- Test Payment -->
+        <div class="plan-section">
+            <h3>Test Payment</h3>
+            <div class="amount">₹1</div>
+            <p>Test the integration with ₹1</p>
+            <button class="pay-button" onclick="initiatePayment('test', 1)">Test Payment ₹1</button>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function initiatePayment(planType, amount) {
+            const button = event.target;
+            const originalText = button.textContent;
+            
+            // Disable button and show loading
+            button.disabled = true;
+            button.textContent = '🔄 Processing...';
+            
+            try {
+                showStatus('Creating payment session...', 'success');
+                
+                // Create payment session
+                const response = await fetch('/create-payment-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        currency: 'INR',
+                        plan_type: planType,
+                        user: {
+                            name: 'Test User',
+                            email: 'test@codedebhai.com',
+                            phone: '9999999999'
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Payment session response:', data);
+                
+                if (data.success && data.payment_session_id) {
+                    showStatus('Payment session created! Redirecting to payment page...', 'success');
+                    
+                    // Construct payment URL
+                    const paymentUrl = `https://sandbox.cashfree.com/checkout/${data.payment_session_id}`;
+                    console.log('Redirecting to:', paymentUrl);
+                    
+                    // Redirect to payment page
+                    setTimeout(() => {
+                        window.location.href = paymentUrl;
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Failed to create payment session');
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus(`Payment failed: ${error.message}`, 'error');
+            } finally {
+                // Re-enable button
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+        
+        // Check for payment success on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('order_id')) {
+                showStatus(`Payment completed! Order ID: ${urlParams.get('order_id')}`, 'success');
+            }
+        });
+    </script>
+</body>
+</html>
+        <div class="description">Click below to proceed with payment</div>
+        <button class="pay-button" onclick="initiatePayment()">Pay Now</button>
+    </div>
+
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <script>
+        // Initialize Cashfree SDK
+        const cashfree = Cashfree({
+            mode: "sandbox" // Change to "production" for live payments
+        });
+
+        async function initiatePayment() {
+            try {
+                // Create payment session
+                const sessionId = await createPaymentSession();
+                
+                if (sessionId) {
+                    // Redirect to Cashfree checkout
+                    const checkoutOptions = {
+                        paymentSessionId: sessionId,
+                        redirectTarget: "_self"
+                    };
+                    
+                    cashfree.checkout(checkoutOptions);
+                } else {
+                    alert("Failed to create payment session. Please try again.");
+                }
+            } catch (error) {
+                console.error("Payment error:", error);
+                alert("Payment failed. Please try again.");
+            }
+        }
+
+        async function createPaymentSession() {
+            try {
+                // Call your backend to create payment session
+                const response = await fetch('/create-payment-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: 99,
+                        currency: 'INR'
+                    })
+                });
+
+                const data = await response.json();
+                return data.payment_session_id;
+            } catch (error) {
+                console.error("Error creating payment session:", error);
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>

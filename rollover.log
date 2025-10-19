@@ -1,0 +1,337 @@
+2025-07-13 22:06:49,731 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-13 22:06:50,858 - INFO - Payment record created: 34
+2025-07-13 22:06:50,975 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-13 22:06:51,832 - INFO - Payment record created: 35
+2025-07-13 22:06:51,844 - ERROR - Error getting users with credits: 'DatabaseHelper' object has no attribute 'supabase'
+2025-07-13 22:06:51,844 - INFO - No users with credits found. Rollover process complete.
+2025-07-14 20:28:12,011 - INFO - ================================================================================
+2025-07-14 20:28:13,407 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:28:13,640 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:28:15,165 - INFO - Payment record created: 36
+2025-07-14 20:28:15,321 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:28:15,427 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:28:37,587 - ERROR - Error creating payment record: connection to server at "db.dnyejdazlypnefdqekhr.supabase.co" (2406:da1a:6b0:f60f:d3c:ac54:9bd2:57d7), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+2025-07-14 20:28:55,363 - ERROR - Error getting user by phone: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1018)
+2025-07-14 20:29:18,791 - INFO - HTTP Request: POST https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users "HTTP/2 409 Conflict"
+2025-07-14 20:29:18,796 - ERROR - Error creating user: {'message': 'duplicate key value violates unique constraint "users_phone_number_key"', 'code': '23505', 'hint': None, 'details': None}
+2025-07-14 20:29:18,797 - ERROR - Failed to create user 9999999003
+2025-07-14 20:29:19,192 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:29:20,352 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:29:25,506 - INFO - Payment record created: 37
+2025-07-14 20:29:26,358 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:29:26,501 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:29:27,920 - INFO - Payment record created: 38
+2025-07-14 20:29:28,059 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999006 "HTTP/2 200 OK"
+2025-07-14 20:29:28,189 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999006 "HTTP/2 200 OK"
+2025-07-14 20:29:28,194 - INFO - ============================================================
+2025-07-14 20:29:28,319 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,321 - INFO -       Expected: True, Actual: True
+2025-07-14 20:29:28,321 - INFO -       Reason: monthly plan within 1 month
+2025-07-14 20:29:28,322 - INFO -       Description: Monthly plan purchased 15 days ago - should rollover
+2025-07-14 20:29:28,322 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,437 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,442 - INFO -       Expected: True, Actual: False
+2025-07-14 20:29:28,442 - INFO -       Reason: No payment history
+2025-07-14 20:29:28,443 - INFO -       Description: Power plan purchased 20 days ago - should rollover
+2025-07-14 20:29:28,443 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,549 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999003&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,562 - INFO -       Expected: False, Actual: True
+2025-07-14 20:29:28,562 - INFO -       Reason: power plan within 1 month
+2025-07-14 20:29:28,563 - INFO -       Description: Starter plan purchased 10 days ago - should NOT rollover
+2025-07-14 20:29:28,563 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,681 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,687 - INFO -       Expected: False, Actual: True
+2025-07-14 20:29:28,688 - INFO -       Reason: monthly plan within 1 month
+2025-07-14 20:29:28,688 - INFO -       Description: Monthly plan purchased 45 days ago - should NOT rollover (expired)
+2025-07-14 20:29:28,689 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,797 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999005&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,802 - INFO -       Expected: False, Actual: True
+2025-07-14 20:29:28,803 - INFO -       Reason: power plan within 1 month
+2025-07-14 20:29:28,803 - INFO -       Description: Power plan purchased 40 days ago - should NOT rollover (expired)
+2025-07-14 20:29:28,804 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,894 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999006&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:29:28,898 - INFO -       Expected: False, Actual: False
+2025-07-14 20:29:28,898 - INFO -       Reason: No payment history
+2025-07-14 20:29:28,898 - INFO -       Description: User with no payment history - should NOT rollover
+2025-07-14 20:29:28,899 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:28,902 - INFO - ============================================================
+2025-07-14 20:29:28,991 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:29:29,129 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:29:29,229 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:29:29,348 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:29:29,439 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:29:29,628 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999006 "HTTP/2 200 OK"
+2025-07-14 20:29:29,631 - ERROR - Error getting users with credits: 'DatabaseHelper' object has no attribute 'supabase'
+2025-07-14 20:29:29,631 - INFO - No users with credits found. Rollover process complete.
+2025-07-14 20:29:29,632 - INFO - ============================================================
+2025-07-14 20:29:30,028 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:29:30,030 - INFO -       Credits Before: 25, After: 25
+2025-07-14 20:29:30,030 - INFO -       Expected Rollover: True
+2025-07-14 20:29:30,030 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,296 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:29:30,300 - INFO -       Credits Before: 75, After: 75
+2025-07-14 20:29:30,300 - INFO -       Expected Rollover: True
+2025-07-14 20:29:30,300 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,596 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:29:30,598 - INFO -       Credits Before: 25, After: 25
+2025-07-14 20:29:30,598 - INFO -       Expected Rollover: False
+2025-07-14 20:29:30,598 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,723 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:29:30,725 - INFO -       Credits Before: 40, After: 40
+2025-07-14 20:29:30,726 - INFO -       Expected Rollover: False
+2025-07-14 20:29:30,726 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,839 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:29:30,843 - INFO -       Credits Before: 100, After: 100
+2025-07-14 20:29:30,843 - INFO -       Expected Rollover: False
+2025-07-14 20:29:30,843 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,956 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999006 "HTTP/2 200 OK"
+2025-07-14 20:29:30,958 - INFO -       Credits Before: 10, After: 10
+2025-07-14 20:29:30,958 - INFO -       Expected Rollover: False
+2025-07-14 20:29:30,958 - INFO - ------------------------------------------------------------
+2025-07-14 20:29:30,959 - INFO - ============================================================
+2025-07-14 20:29:30,974 - INFO - ============================================================
+2025-07-14 20:35:08,308 - INFO - STARTING CREDIT ROLLOVER SYSTEM TEST
+2025-07-14 20:35:08,308 - INFO - ================================================================================
+2025-07-14 20:35:08,308 - INFO - Testing rollover for 299 INR (Monthly) and 799 INR (Power) plans only
+2025-07-14 20:35:08,309 - INFO - ================================================================================
+2025-07-14 20:35:08,309 - INFO - TESTING ELIGIBILITY LOGIC
+2025-07-14 20:35:08,309 - INFO - ==================================================
+2025-07-14 20:35:09,413 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:35:09,536 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:35:10,473 - INFO - Payment record created: 39
+2025-07-14 20:35:10,474 - INFO - Created test payment for 9999999001 - monthly plan
+2025-07-14 20:35:10,652 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:35:10,817 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:35:12,066 - INFO - Payment record created: 40
+2025-07-14 20:35:12,067 - INFO - Created test payment for 9999999002 - power plan
+2025-07-14 20:35:12,287 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:35:13,228 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:35:13,830 - INFO - Payment record created: 41
+2025-07-14 20:35:13,831 - INFO - Created test payment for 9999999003 - starter plan
+2025-07-14 20:35:13,923 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:35:14,119 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:35:16,053 - INFO - Payment record created: 42
+2025-07-14 20:35:16,053 - INFO - Created test payment for 9999999004 - monthly plan
+2025-07-14 20:35:16,054 - INFO - 
+Testing eligibility logic...
+2025-07-14 20:35:16,160 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:35:16,161 - INFO - PASS: Monthly plan 15 days ago - should be eligible
+2025-07-14 20:35:16,161 - INFO -   Expected: True, Actual: True
+2025-07-14 20:35:16,162 - INFO -   Reason: monthly plan within 1 month
+2025-07-14 20:35:16,467 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:35:16,468 - INFO - PASS: Power plan 20 days ago - should be eligible
+2025-07-14 20:35:16,468 - INFO -   Expected: True, Actual: True
+2025-07-14 20:35:16,469 - INFO -   Reason: power plan within 1 month
+2025-07-14 20:35:16,583 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999003&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:35:16,584 - INFO - PASS: Starter plan 10 days ago - should NOT be eligible
+2025-07-14 20:35:16,585 - INFO -   Expected: False, Actual: False
+2025-07-14 20:35:16,585 - INFO -   Reason: Plan starter not eligible for rollover or expired
+2025-07-14 20:35:16,875 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:35:16,877 - INFO - FAIL: Monthly plan 45 days ago - should NOT be eligible (expired)
+2025-07-14 20:35:16,877 - INFO -   Expected: False, Actual: True
+2025-07-14 20:35:16,878 - INFO -   Reason: monthly plan within 1 month
+2025-07-14 20:35:16,878 - INFO - 
+TESTING ROLLOVER PROCESS
+2025-07-14 20:35:16,878 - INFO - ==================================================
+2025-07-14 20:35:17,025 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:35:17,284 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:35:17,397 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:35:17,694 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:35:17,695 - INFO - Credits before rollover:
+2025-07-14 20:35:17,695 - INFO -   9999999001: 10 credits
+2025-07-14 20:35:17,695 - INFO -   9999999002: 10 credits
+2025-07-14 20:35:17,695 - INFO -   9999999003: 10 credits
+2025-07-14 20:35:17,696 - INFO -   9999999004: 10 credits
+2025-07-14 20:35:17,696 - INFO - 
+Running rollover process...
+2025-07-14 20:35:17,702 - ERROR - Error getting users with credits: 'DatabaseHelper' object has no attribute 'supabase'
+2025-07-14 20:35:17,702 - INFO - No users with credits found. Rollover process complete.
+2025-07-14 20:35:17,702 - INFO - 
+Credits after rollover:
+2025-07-14 20:35:17,817 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:35:17,819 - INFO -   9999999001: 10 credits (PASS)
+2025-07-14 20:35:18,103 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:35:18,104 - INFO -   9999999002: 10 credits (PASS)
+2025-07-14 20:35:18,200 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:35:18,202 - INFO -   9999999003: 10 credits (FAIL)
+2025-07-14 20:35:18,203 - INFO -     Expected: 0, Got: 10
+2025-07-14 20:35:18,297 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:35:18,299 - INFO -   9999999004: 10 credits (FAIL)
+2025-07-14 20:35:18,299 - INFO -     Expected: 0, Got: 10
+2025-07-14 20:35:18,300 - INFO - 
+FINAL RESULTS
+2025-07-14 20:35:18,300 - INFO - ==================================================
+2025-07-14 20:35:18,300 - INFO - Eligibility Logic Test: FAILED
+2025-07-14 20:35:18,300 - INFO - Rollover Process Test: FAILED
+2025-07-14 20:35:18,301 - INFO - 
+OVERALL RESULT: FAILED
+2025-07-14 20:35:18,302 - INFO - Credit rollover system has issues
+2025-07-14 20:36:00,816 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:36:00,998 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:36:54,613 - INFO - STARTING CREDIT ROLLOVER SYSTEM TEST
+2025-07-14 20:36:54,614 - INFO - ================================================================================
+2025-07-14 20:36:54,614 - INFO - Testing rollover for 299 INR (Monthly) and 799 INR (Power) plans only
+2025-07-14 20:36:54,614 - INFO - ================================================================================
+2025-07-14 20:36:54,614 - INFO - TESTING ELIGIBILITY LOGIC
+2025-07-14 20:36:54,615 - INFO - ==================================================
+2025-07-14 20:36:55,203 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:36:55,354 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:36:56,153 - INFO - Payment record created: 44
+2025-07-14 20:36:56,936 - INFO - Created test payment for 9999999001 - monthly plan
+2025-07-14 20:36:57,070 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:36:57,177 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:36:57,977 - INFO - Payment record created: 45
+2025-07-14 20:36:58,758 - INFO - Created test payment for 9999999002 - power plan
+2025-07-14 20:36:58,854 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:36:58,949 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:36:59,871 - INFO - Payment record created: 46
+2025-07-14 20:37:00,665 - INFO - Created test payment for 9999999003 - starter plan
+2025-07-14 20:37:00,753 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:37:00,867 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:37:01,793 - INFO - Payment record created: 47
+2025-07-14 20:37:02,537 - INFO - Created test payment for 9999999004 - monthly plan
+2025-07-14 20:37:02,537 - INFO - 
+Testing eligibility logic...
+2025-07-14 20:37:02,662 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:02,667 - INFO - PASS: Monthly plan 15 days ago - should be eligible
+2025-07-14 20:37:02,668 - INFO -   Expected: True, Actual: True
+2025-07-14 20:37:02,669 - INFO -   Reason: monthly plan within 1 month
+2025-07-14 20:37:02,782 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:02,783 - INFO - PASS: Power plan 20 days ago - should be eligible
+2025-07-14 20:37:02,783 - INFO -   Expected: True, Actual: True
+2025-07-14 20:37:02,783 - INFO -   Reason: power plan within 1 month
+2025-07-14 20:37:02,894 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999003&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:02,895 - INFO - PASS: Starter plan 10 days ago - should NOT be eligible
+2025-07-14 20:37:02,895 - INFO -   Expected: False, Actual: False
+2025-07-14 20:37:02,896 - INFO -   Reason: Plan starter not eligible for rollover or expired
+2025-07-14 20:37:02,997 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:03,003 - INFO - FAIL: Monthly plan 45 days ago - should NOT be eligible (expired)
+2025-07-14 20:37:03,004 - INFO -   Expected: False, Actual: True
+2025-07-14 20:37:03,004 - INFO -   Reason: monthly plan within 1 month
+2025-07-14 20:37:03,005 - INFO - 
+TESTING ROLLOVER PROCESS
+2025-07-14 20:37:03,005 - INFO - ==================================================
+2025-07-14 20:37:03,103 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:37:03,216 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:37:03,345 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:37:03,443 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:37:03,446 - INFO - Credits before rollover:
+2025-07-14 20:37:03,447 - INFO -   9999999001: 10 credits
+2025-07-14 20:37:03,447 - INFO -   9999999002: 10 credits
+2025-07-14 20:37:03,448 - INFO -   9999999003: 10 credits
+2025-07-14 20:37:03,449 - INFO -   9999999004: 10 credits
+2025-07-14 20:37:03,452 - INFO - 
+Running rollover process...
+2025-07-14 20:37:05,744 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&credits=gt.0 "HTTP/2 200 OK"
+2025-07-14 20:37:05,746 - INFO - Found 10 users with credits to process
+2025-07-14 20:37:05,747 - INFO - Processing rollover for User 3210 (+919876543210) with 10 credits
+2025-07-14 20:37:05,873 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.%2B919876543210&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:05,980 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.%2B919876543210 "HTTP/2 200 OK"
+2025-07-14 20:37:05,984 - INFO - AUDIT: EXPIRY - +919876543210 - 10 credits - unknown plan
+2025-07-14 20:37:05,984 - INFO - Processing rollover for Test User (+919999999999) with 5 credits
+2025-07-14 20:37:06,073 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.%2B919999999999&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:06,204 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.%2B919999999999 "HTTP/2 200 OK"
+2025-07-14 20:37:06,208 - INFO - AUDIT: EXPIRY - +919999999999 - 5 credits - unknown plan
+2025-07-14 20:37:06,208 - INFO - Processing rollover for 2tharan (1234567891) with 1 credits
+2025-07-14 20:37:06,350 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.1234567891&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:06,472 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.1234567891 "HTTP/2 200 OK"
+2025-07-14 20:37:06,474 - INFO - AUDIT: EXPIRY - 1234567891 - 1 credits - unknown plan
+2025-07-14 20:37:06,475 - INFO - Processing rollover for Test User with very high credits (9999999005) with 100 credits
+2025-07-14 20:37:06,585 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999005&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:06,590 - INFO - AUDIT: ROLLOVER - 9999999005 - 100 credits - power plan
+2025-07-14 20:37:06,591 - INFO - Processing rollover for Test User with no payment history (9999999006) with 10 credits
+2025-07-14 20:37:06,682 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999006&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:06,795 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999006 "HTTP/2 200 OK"
+2025-07-14 20:37:06,797 - INFO - AUDIT: EXPIRY - 9999999006 - 10 credits - unknown plan
+2025-07-14 20:37:06,798 - INFO - Processing rollover for geetha (9717540987) with 411 credits
+2025-07-14 20:37:06,895 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9717540987&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:06,999 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9717540987 "HTTP/2 200 OK"
+2025-07-14 20:37:07,002 - INFO - AUDIT: EXPIRY - 9717540987 - 411 credits - starter plan
+2025-07-14 20:37:07,002 - INFO - Processing rollover for Test User 1 (9999999001) with 10 credits
+2025-07-14 20:37:07,096 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:07,110 - INFO - AUDIT: ROLLOVER - 9999999001 - 10 credits - monthly plan
+2025-07-14 20:37:07,111 - INFO - Processing rollover for Test User 2 (9999999002) with 10 credits
+2025-07-14 20:37:07,215 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:07,229 - INFO - AUDIT: ROLLOVER - 9999999002 - 10 credits - power plan
+2025-07-14 20:37:07,230 - INFO - Processing rollover for Test User 3 (9999999003) with 10 credits
+2025-07-14 20:37:07,374 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999003&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:07,496 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:37:07,498 - INFO - AUDIT: EXPIRY - 9999999003 - 10 credits - starter plan
+2025-07-14 20:37:07,499 - INFO - Processing rollover for Test User with 0 credits (9999999004) with 10 credits
+2025-07-14 20:37:07,631 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:07,644 - INFO - AUDIT: ROLLOVER - 9999999004 - 10 credits - monthly plan
+2025-07-14 20:37:07,645 - INFO - 
+============================================================
+2025-07-14 20:37:07,653 - INFO - ============================================================
+2025-07-14 20:37:07,686 - INFO - ============================================================
+2025-07-14 20:37:07,693 - INFO - ============================================================
+2025-07-14 20:37:07,693 - INFO - 
+Credits after rollover:
+2025-07-14 20:37:07,805 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:37:07,807 - INFO -   9999999001: 10 credits (PASS)
+2025-07-14 20:37:07,935 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999002 "HTTP/2 200 OK"
+2025-07-14 20:37:07,936 - INFO -   9999999002: 10 credits (PASS)
+2025-07-14 20:37:08,041 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:37:08,044 - INFO -   9999999003: 0 credits (PASS)
+2025-07-14 20:37:08,160 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999004 "HTTP/2 200 OK"
+2025-07-14 20:37:08,162 - INFO -   9999999004: 10 credits (FAIL)
+2025-07-14 20:37:08,164 - INFO -     Expected: 0, Got: 10
+2025-07-14 20:37:08,164 - INFO - 
+FINAL RESULTS
+2025-07-14 20:37:08,165 - INFO - ==================================================
+2025-07-14 20:37:08,165 - INFO - Eligibility Logic Test: FAILED
+2025-07-14 20:37:08,166 - INFO - Rollover Process Test: FAILED
+2025-07-14 20:37:08,166 - INFO - 
+OVERALL RESULT: FAILED
+2025-07-14 20:37:08,167 - INFO - Credit rollover system has issues
+2025-07-14 20:37:24,020 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:37:24,143 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:38:18,262 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:39:31,583 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:39:31,695 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:39:31,815 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999003&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:42:39,664 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999001 "HTTP/2 200 OK"
+2025-07-14 20:42:40,663 - INFO - Payment record created: 48
+2025-07-14 20:42:40,773 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999003 "HTTP/2 200 OK"
+2025-07-14 20:42:41,892 - INFO - Payment record created: 49
+2025-07-14 20:42:41,993 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:42:43,441 - INFO - Payment record created: 50
+2025-07-14 20:42:43,444 - INFO - STARTING MONTHLY ROLLOVER PROCESS
+2025-07-14 20:42:43,445 - INFO - Rollover Date: 2025-07-14 20:42:21
+2025-07-14 20:42:44,668 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&credits=gt.0 "HTTP/2 200 OK"
+2025-07-14 20:42:44,672 - INFO - Found 4 users with credits to process
+2025-07-14 20:42:44,673 - INFO - Processing rollover for Test User with very high credits (9999999005) with 100 credits
+2025-07-14 20:42:44,781 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999005&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:42:44,783 - INFO - EXPIRY: Test User with very high credits (9999999005) - 100 credits expired (Plan starter not eligible for rollover or expired)
+2025-07-14 20:42:45,080 - INFO - HTTP Request: PATCH https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?phone_number=eq.9999999005 "HTTP/2 200 OK"
+2025-07-14 20:42:45,082 - INFO - AUDIT: EXPIRY - 9999999005 - 100 credits - starter plan
+2025-07-14 20:42:45,083 - INFO - Processing rollover for Test User 1 (9999999001) with 10 credits
+2025-07-14 20:42:45,486 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:42:45,488 - INFO - ROLLOVER: Test User 1 (9999999001) - 10 credits rolled over (monthly plan within 1 month)
+2025-07-14 20:42:45,488 - INFO - AUDIT: ROLLOVER - 9999999001 - 10 credits - monthly plan
+2025-07-14 20:42:45,489 - INFO - Processing rollover for Test User 2 (9999999002) with 10 credits
+2025-07-14 20:42:45,614 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:42:45,616 - INFO - ROLLOVER: Test User 2 (9999999002) - 10 credits rolled over (power plan within 1 month)
+2025-07-14 20:42:45,617 - INFO - AUDIT: ROLLOVER - 9999999002 - 10 credits - power plan
+2025-07-14 20:42:45,617 - INFO - Processing rollover for Test User with 0 credits (9999999004) with 10 credits
+2025-07-14 20:42:45,902 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 20:42:45,904 - INFO - ROLLOVER: Test User with 0 credits (9999999004) - 10 credits rolled over (monthly plan within 1 month)
+2025-07-14 20:42:45,905 - INFO - AUDIT: ROLLOVER - 9999999004 - 10 credits - monthly plan
+2025-07-14 20:42:45,906 - INFO - 
+============================================================
+2025-07-14 20:42:45,906 - INFO - MONTHLY ROLLOVER REPORT
+2025-07-14 20:42:45,907 - INFO - ============================================================
+2025-07-14 20:42:45,908 - INFO - Rollover Date: 2025-07-14 20:42:21
+2025-07-14 20:42:45,908 - INFO - Total Users Processed: 4
+2025-07-14 20:42:45,909 - INFO - Users with Credits Rolled Over: 3
+2025-07-14 20:42:45,909 - INFO - Users with Credits Expired: 1
+2025-07-14 20:42:45,910 - INFO - Total Credits Rolled Over: 30
+2025-07-14 20:42:45,910 - INFO - Total Credits Expired: 100
+2025-07-14 20:42:45,910 - INFO - ============================================================
+2025-07-14 20:42:45,914 - INFO - ============================================================

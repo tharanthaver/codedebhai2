@@ -1,0 +1,5182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeDeBhai</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="/static/images/3.png">
+  <!-- Preload fonts for better performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Odibee+Sans&display=swap" rel="stylesheet">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Odibee+Sans&display=block" rel="stylesheet">
+  </noscript>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BF5MEJLC2P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BF5MEJLC2P');
+  </script>
+  
+  <!-- Custom Analytics Tracking -->
+  <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "{{ firebase_api_key }}",
+      authDomain: "codedebhai-454b5.firebaseapp.com",
+      projectId: "codedebhai-454b5",
+      storageBucket: "codedebhai-454b5.firebasestorage.app",
+      messagingSenderId: "1040859227097",
+      appId: "1:1040859227097:web:f331326184078fcef56fc8",
+      measurementId: "G-BF5MEJLC2P"
+    };
+
+    try {
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      console.log("✅ Firebase initialized");
+    } catch (error) {
+      console.error("❌ Firebase initialization failed:", error);
+    }
+  </script>
+  <style>
+    /* ================= Font Loading and Fallbacks ================= */
+    /* ================= Enhanced Progress Styles ================= */
+    .progress-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .progress-wrapper {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .progress-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .progress-icon {
+      font-size: 3rem;
+      color: #4ecdc4;
+      animation: pulse 2s infinite;
+    }
+    
+    .progress-title {
+      color: #4ecdc4;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .progress-bar-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      height: 25px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4ecdc4, #44a08d);
+      transition: width 0.5s ease;
+      border-radius: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4ecdc4, #44a08d);
+      transition: width 0.5s ease;
+      border-radius: 15px;
+      width: 0%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: progressShimmer 1.5s infinite;
+    }
+    
+    .progress-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.9rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    
+    .progress-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+    }
+    
+    .progress-stage {
+      color: #4ecdc4;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .stat-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-value {
+      color: #4ecdc4;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    
+    .question-progress {
+      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* ================= Customization Modal Styles ================= */
+    .customization-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+    .customization-content {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      color: white;
+    }
+    .customization-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 15px;
+    }
+    .customization-title {
+      color: #4ecdc4;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #ff6b6b;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .close-btn:hover {
+      background: rgba(255, 107, 107, 0.2);
+    }
+    .customization-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-label {
+      color: #4ecdc4;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .form-control {
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.9rem;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 5px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #4ecdc4;
+    }
+    .checkbox-item label {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
+    }
+    .color-input {
+      width: 60px;
+      height: 40px;
+      padding: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+    }
+    .customization-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      gap: 15px;
+    }
+    .reset-btn {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .reset-btn:hover {
+      background: rgba(255, 107, 107, 0.3);
+      transform: translateY(-1px);
+    }
+    .apply-btn {
+      background: linear-gradient(135deg, #4ecdc4, #44a08d);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    .apply-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+    }
+    .customize-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .customize-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+    
+    .question-progress.show {
+      display: block;
+    }
+    
+    .question-counter {
+      color: #4ecdc4;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .progress-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-tip {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    @keyframes progressShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .progress-wrapper {
+        padding: 30px 20px;
+        max-width: 95%;
+      }
+      
+      .progress-stats {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .stat-item {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+    
+    /* ================= Global Styles ================= */
+    html, body {
+      scroll-behavior: smooth;
+      background-color: #000;  /* Landing page background black */
+      color: #fff;             /* Global text color white */
+    }
+    body {
+      margin: 0;
+      font-size: 14px;
+      font-family: "Libre Baskerville", serif, Georgia, "Times New Roman", Times, serif;
+    }
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      list-style: none;
+    }
+    main {
+      width: min(1400px, 100vw);
+      margin: auto;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1000;
+    }
+    /* Restore header logos to original size (40px) and ensure they appear white */
+    header img {
+      height: 40px;
+      filter: brightness(0) invert(1);
+    }
+    
+    /* Login button styles */
+    .login-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .login-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    
+    .user-welcome {
+      color: #4ecdc4;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    
+    .credits-display {
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid rgba(78, 205, 196, 0.3);
+    }
+    
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    /* Enhanced Credits Section */
+    .credits-section {
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+      border: 1px solid rgba(78, 205, 196, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 30px auto;
+      max-width: 800px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: creditsSlideIn 0.8s ease-out;
+    }
+    
+    @keyframes creditsSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .credits-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: creditsShimmer 3s infinite;
+    }
+    
+    @keyframes creditsShimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .credits-header {
+      font-size: 1.5rem;
+      color: #4ecdc4;
+      margin-bottom: 15px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .credits-balance {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #fff;
+      margin: 10px 0;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .credits-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    
+    .credits-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .credits-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .credits-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .credits-btn.primary {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+    }
+    
+    .credits-btn.primary:hover {
+      box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .user-info {
+        min-width: auto;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+      }
+      
+      .user-welcome {
+        align-items: center;
+        text-align: center;
+      }
+      
+      .credits-balance {
+        font-size: 2rem;
+      }
+      
+      .credits-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .credits-btn {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+    
+    /* Login Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      backdrop-filter: blur(25px);
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    
+    .modal h2 {
+      color: #fff;
+      margin-bottom: 30px;
+      font-family: "Odibee Sans", sans-serif;
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #fff, #4ecdc4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .modal input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .modal input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .modal input:focus {
+      outline: none;
+      border-color: #4ecdc4;
+      box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      padding: 15px 0 0 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+    
+    .modal-btn.primary {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+    }
+    
+    .modal-btn.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .modal-btn:disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .close {
+      color: rgba(255, 255, 255, 0.7);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    
+    .close:hover {
+      color: #fff;
+    }
+    
+    .otp-container {
+      display: none;
+      margin-top: 20px;
+      padding: 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .auth-message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    .auth-message.success {
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+      border: 1px solid rgba(78, 205, 196, 0.3);
+    }
+    
+    .auth-message.error {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+    
+    /* Saved Accounts Styles */
+    .saved-account {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+    
+    .saved-account:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #4ecdc4;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(78, 205, 196, 0.2);
+    }
+    
+    .saved-account .account-name {
+      font-weight: bold;
+      color: #fff;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+    
+    .saved-account .account-phone {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+    
+    .saved-account .remove-account {
+      float: right;
+      background: rgba(255, 107, 107, 0.3);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      border-radius: 15px;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .saved-account .remove-account:hover {
+      background: rgba(255, 107, 107, 0.5);
+      color: #fff;
+    }
+    
+    .no-accounts {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 20px;
+      font-style: italic;
+    }
+    
+    /* Question Limit Confirmation Modal - Website Aesthetic */
+    .question-limit-modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(15px);
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .question-limit-content {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+      backdrop-filter: blur(70px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    .question-limit-header {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .question-limit-icon {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      display: block;
+      color: #4ecdc4;
+    }
+    
+    .question-limit-title {
+      font-family: "Odibee Sans", sans-serif;
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .question-limit-body {
+      padding: 25px;
+      color: #fff;
+      line-height: 1.5;
+    }
+    
+    .question-limit-body p {
+      margin: 0 0 15px 0;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .question-stats {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      border: 1px solid rgba(78, 205, 196, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .stat-row:last-child {
+      margin-bottom: 0;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    
+    .stat-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+    }
+    
+    .stat-value {
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    .stat-value.highlight {
+      color: #4ecdc4;
+      font-size: 1.1rem;
+      text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+    }
+    
+    .credits-info {
+      background: rgba(78, 205, 196, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 15px 0;
+      border: 1px solid rgba(78, 205, 196, 0.3);
+      text-align: center;
+    }
+    
+    .credits-info .emoji {
+      font-size: 1.3rem;
+      margin-right: 6px;
+    }
+    
+    .credits-info strong {
+      color: #4ecdc4;
+      font-size: 0.95rem;
+    }
+    
+    .encouragement-text {
+      color: #4ecdc4;
+      font-weight: 500;
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      text-shadow: 0 0 8px rgba(78, 205, 196, 0.3);
+    }
+    
+    .question-limit-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .question-limit-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    
+    .question-limit-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    .question-limit-btn:hover::before {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .question-limit-btn span {
+      position: relative;
+      z-index: 1;
+      font-size: 0.85rem;
+    }
+    
+    .btn-continue {
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      color: #fff;
+      border-color: #4ecdc4;
+      box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+    }
+    
+    .btn-continue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+      border-color: #4ecdc4;
+    }
+    
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-cancel:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+    
+    /* Mobile responsive styles for modals */
+    @media screen and (max-width: 768px) {
+      .modal-content {
+        margin: 2% auto;
+        width: 95%;
+        max-width: 95%;
+        padding: 20px;
+        max-height: 95vh;
+      }
+      
+      .modal h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+      
+      .modal input {
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+      
+      .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .modal-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+      
+      .question-limit-content {
+        margin: 5% auto;
+        width: 95%;
+        max-width: 95%;
+      }
+      
+      .question-limit-body {
+        padding: 20px;
+      }
+      
+      .question-limit-buttons {
+        flex-direction: column;
+      }
+      
+      .question-limit-btn {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+    
+    /* ================= Banner & Grid Styles ================= */
+    .banner {
+      position: relative;
+    }
+    .banner .content {
+      font-family: "Odibee Sans", cursive, Arial, sans-serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+    .banner .content h1 {
+      font-size: 17em;
+      margin: 0;
+      font-weight: bold;
+    }
+    .banner .content .right {
+      text-align: right;
+      transform: translateY(-30px);
+    }
+    .banner .content .right h2 {
+      font-size: 8em;
+      font-weight: bold;
+    }
+    .banner .image {
+      width: 100%;
+      height: 600px;
+      background-image: url("{{ url_for('static', filename='images/banner.png') }}");
+      position: relative;
+    }
+    .banner .image img {
+      position: absolute;
+      height: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+    }
+    /* Ensure grid images fill their container */
+    .grid figure img {
+      width: 100%;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(var(--row), 100px);
+      margin-top: 50px;
+      gap: 50px;
+    }
+    .grid-1 {
+      --row: 2;
+    }
+    .grid-1 figure:nth-child(1) {
+      grid-column: 2 / 6;
+      grid-row: 1;
+    }
+    .grid-1 figure:nth-child(2) {
+      grid-column: 3 / 5;
+      grid-row: 1;
+    }
+    .grid-1 h2:nth-child(3) {
+      font-size: 7em;
+      grid-column: 1 / 7;
+      text-align: center;
+      grid-row: 5;
+      z-index: 1;
+    }
+    .grid-2 {
+      --row: 8;
+      font-size: 1.7em;
+    }
+    .grid-2 div:nth-child(1) {
+      grid-column: 1 / 4;
+      grid-row: 3;
+    }
+    .grid-2 div:nth-child(2) {
+      grid-column: 4 / 7;
+      grid-row: 1;
+    }
+    .grid-2 div:nth-child(3) {
+      grid-column: 4 / 7;
+      grid-row: 4;
+    }
+    .grid-2 div:nth-child(4) {
+      grid-column: 1 / 4;
+      grid-row: 6;
+    }
+    .grid-3 {
+      --row: 6;
+      font-size: 10em;
+    }
+    .grid-3 div {
+      grid-column: 2 / 6;
+      text-wrap: nowrap;
+    }
+    .grid-3 div:nth-child(even) {
+      text-align: right;
+    }
+    .grid-3 div:nth-child(5) {
+      grid-column: 1 / 6;
+    }
+    .grid-3 div:nth-child(4) {
+      grid-column: 1 / 7;
+    }
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.5);
+      min-height: 100vh;
+    }
+    footer .content {
+      width: min(1400px, 100vw);
+      margin: auto;
+      padding: 100px 20px;
+    }
+    .grid-5 {
+      --row: 5;
+      font-size: 1.7em;
+    }
+    .grid-5 div:nth-child(1) {
+      grid-row: 1;
+      grid-column: 1 / 3;
+    }
+    .grid-5 div:nth-child(2) {
+      grid-row: 2;
+      grid-column: 3 / 5;
+    }
+    .grid-5 div:nth-child(3) {
+      grid-row: 3;
+      grid-column: 5 / 7;
+    }
+    .grid-5 div:nth-child(4) {
+      grid-row: 1;
+      grid-column: 5 / 7;
+    }
+    
+    /* ================= Responsive Styles ================= */
+    @media screen and (max-width: 1023px) {
+      header img {
+        height: 2em;
+      }
+      .banner .content h1 {
+        font-size: 8em;
+      }
+      .banner .content .right h2 {
+        font-size: 4em;
+      }
+      .banner .content .right {
+        transform: none;
+      }
+      .grid-2 div:nth-child(1) {
+        grid-row: 2;
+      }
+      .grid-2 div:nth-child(3) {
+        grid-row: 6;
+      }
+      .grid-2 div:nth-child(4) {
+        grid-row: 5;
+      }
+      .grid-3 {
+        font-size: 5em;
+        line-height: 1em;
+      }
+    }
+    @media screen and (max-width: 767px) {
+      header img {
+        height: unset;
+        width: 100%;
+      }
+      .banner .content h1 {
+        font-size: 4em;
+      }
+      .banner .content .right h2 {
+        font-size: 2em;
+      }
+      .banner .content {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .banner {
+        overflow: hidden;
+      }
+      .grid-1 h2:nth-child(3) {
+        font-size: 3em;
+      }
+      .grid {
+        display: block;
+      }
+      .grid-3 {
+        font-size: 4em;
+        display: block;
+        margin-bottom: 100px;
+      }
+    }
+    .autoRotate {
+      animation: autoRotateAnimation;
+      animation-timeline: view();
+    }
+    @keyframes autoRotateAnimation {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .autoShow {
+      animation: autoShowAnimation both;
+      animation-timeline: view(70% 5%);
+    }
+    @keyframes autoShowAnimation {
+      from {
+        opacity: 0;
+        transform: translateY(200px) scale(0.3);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .autoBLur {
+      animation: autoBLurAnimation linear both;
+      animation-timeline: view();
+    }
+    @keyframes autoBLurAnimation {
+      0% { filter: blur(40px); }
+      45%, 55% { filter: blur(0px); }
+      100% { filter: blur(40px); }
+    }
+    
+    /* ================= Forms Section (Overlay) Styles ================= */
+    #formsSection {
+      position: absolute;
+      top: 70%; /* Adjust as needed to position below the main heading */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 1000px;
+      z-index: 5;
+      background-color: transparent; /* Fully transparent background */
+      padding: 20px 0;
+      color: #fff;
+    }
+    #formsSection .container {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      width: 100%;
+      margin: auto;
+      position: relative;
+      z-index: 3;
+    }
+    @media (max-width: 900px) {
+      #formsSection .container {
+        flex-direction: column;
+      }
+      #formsSection .separator {
+        display: none;
+      }
+    }
+    #formsSection .half {
+      flex: 1;
+      min-width: 48%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #formsSection .separator {
+      width: 4px;
+      background: #fff;
+      box-shadow: 0 0 15px 4px #fff;
+      margin: 0 10px;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 10px #fff; }
+      100% { box-shadow: 0 0 20px #fff; }
+    }
+    /* Form container boxes with increased blur effect and stronger box shadow */
+    #formsSection .form-container {
+      background: rgba(0, 0, 0, 0.3);  /* Semi-transparent background */
+      backdrop-filter: blur(70px);
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);  /* Increased shadow */
+      width: 100%;
+      max-width: 420px;
+      text-align: left;
+      transition: transform 0.3s ease-out, box-shadow 0.3s ease-in-out;
+    }
+    #formsSection .form-container:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 1); /* Stronger on hover */
+    }
+    #formsSection .form-container h1 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    #formsSection label {
+      color: #fff;
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    /* Updated input, textarea, and select borders to white */
+    #formsSection input,
+    #formsSection textarea,
+    #formsSection select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background: transparent;
+      border: 1px solid #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    #formsSection input:focus,
+    #formsSection textarea:focus,
+    #formsSection select:focus {
+      border-color: #fff;
+      box-shadow: 0 0 10px #fff;
+    }
+    #formsSection .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    #formsSection button {
+      background: transparent;
+      color: #fff;
+      padding: 12px;
+      border: 1px solid #fff;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+    #formsSection button:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px #fff;
+    }
+    #formsSection button:active {
+      transform: scale(0.95);
+    }
+    #formsSection .deleteQuestion {
+      background: transparent;
+      color: #fff;
+      padding: 6px 12px;
+      border: 1px solid #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-top: 5px;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+    #formsSection .deleteQuestion:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px #fff;
+    }
+    #formsSection .progress-container {
+      display: none;
+      margin-top: 20px;
+      padding: 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    .progress-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .progress-header h3 {
+      color: #4ecdc4;
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .progress-status {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    
+    .progress-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .progress-bar {
+      flex: 1;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(45deg, #4ecdc4, #44a08d);
+      border-radius: 6px;
+      width: 0%;
+      transition: width 0.5s ease;
+      position: relative;
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .progress-percentage {
+      color: #4ecdc4;
+      font-weight: bold;
+      font-size: 0.9rem;
+      min-width: 40px;
+      text-align: right;
+    }
+    
+    .progress-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
+    }
+    
+    .time-estimate,
+    .task-stage {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .time-icon,
+    .stage-icon {
+      font-size: 1rem;
+    }
+    
+    .progress-animation {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    #formsSection .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(78, 205, 196, 0.3);
+      border-top: 3px solid #4ecdc4;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Task completion styles */
+    .progress-container.completed {
+      background: rgba(40, 167, 69, 0.2);
+      border-color: rgba(40, 167, 69, 0.4);
+    }
+    
+    .progress-container.completed .progress-fill {
+      background: linear-gradient(45deg, #28a745, #20c997);
+    }
+    
+    .progress-container.failed {
+      background: rgba(220, 53, 69, 0.2);
+      border-color: rgba(220, 53, 69, 0.4);
+    }
+    
+    .progress-container.failed .progress-fill {
+      background: linear-gradient(45deg, #dc3545, #fd7e14);
+    }
+    
+    /* Pulse animation for active processing */
+    .progress-container.processing {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+      50% { box-shadow: 0 8px 32px rgba(78, 205, 196, 0.3); }
+      100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+    }
+    
+    /* ================= Footer Styles ================= */
+    footer .grid-5.content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      font-family: 'Odibee Sans', sans-serif;
+      font-size: 1.5rem;
+    }
+    footer .grid-5.content a {
+      color: greenyellow;
+      text-decoration: none;
+    }
+    footer .grid-5.content .footer-info {
+      margin: 0; /* Remove extra space */
+    }
+    footer .grid-5.content .footer-info p {
+      margin: 0;
+    }
+    footer .grid-5.content .insta-icon {
+      margin-top: 10px;
+    }
+    footer .grid-5.content .insta-icon svg {
+      width: 30px;
+      height: 30px;
+      fill: #fff;
+    }
+    #languageUpload{
+      background-color: black;
+      text-emphasis-color: black;
+    }
+    select {
+  background-color: black;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+select option {
+  background-color: black;
+  color: white;
+}
+
+/* pricingsection css  */
+.pricing-section {
+  padding: 200px 0 100px 0;
+  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+  position: relative;
+  min-height: 100vh;
+  z-index: 1;
+  overflow: hidden;
+  border: none;
+  box-shadow: none;
+}
+
+h3{
+letter-spacing: 2px;
+}
+.pricing-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 107, 107, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.pricing-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+  border: none;
+  box-shadow: none;
+}
+
+.pricing-title {
+  font-family: "Odibee Sans", sans-serif;
+  font-size: 8em;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 30px;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(45deg, #fff, #4ecdc4, #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.pricing-subtitle {
+  font-family: "Libre Baskerville", serif;
+  font-size: 1.8em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 80px;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.pricing-card {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%),
+    radial-gradient(ellipse at center, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  padding: 45px 35px;
+  text-align: center;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 600px;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.pricing-card:hover::before {
+  transform: translateX(100%);
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%),
+    radial-gradient(ellipse at center, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+}
+
+.pricing-card.featured {
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%),
+    radial-gradient(ellipse at center, rgba(78, 205, 196, 0.15) 0%, transparent 70%),
+    linear-gradient(45deg, rgba(255, 107, 107, 0.08) 0%, rgba(78, 205, 196, 0.08) 100%);
+  border: 2px solid rgba(78, 205, 196, 0.4);
+  transform: scale(1.05);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(78, 205, 196, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.pricing-header {
+  margin-bottom: 30px;
+}
+
+.pricing-header h3 {
+  font-family: "Odibee Sans", sans-serif;
+  font-size: 2em;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.pricing-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.pricing-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pricing-badge.best-value {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  color: #000;
+  animation: badgePulse 3s infinite;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.pricing-price {
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.currency {
+  font-size: 1.8em;
+  color: #4ecdc4;
+  vertical-align: top;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.amount {
+  font-family: "Odibee Sans", sans-serif;
+  font-size: 4.5em;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, #fff, #4ecdc4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.period {
+  font-size: 1.1em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.pricing-credits {
+  margin-bottom: 20px;
+}
+
+.credits-number {
+  font-family: "Odibee Sans", sans-serif;
+  font-size: 3em;
+  color: #4ecdc4;
+  font-weight: bold;
+  text-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+}
+
+.credits-text {
+  display: block;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: -10px;
+}
+
+.savings {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(255, 107, 107, 0.5); }
+  to { box-shadow: 0 0 20px rgba(78, 205, 196, 0.5); }
+}
+
+.pricing-features {
+  list-style: none;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.pricing-features li {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12px;
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+.pricing-button {
+  width: 100%;
+  padding: 18px 35px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  margin-top: auto;
+}
+
+.pricing-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: 1;
+}
+
+.pricing-button:hover::before {
+  width: 400px;
+  height: 400px;
+}
+
+.pricing-button span {
+  position: relative;
+  z-index: 2;
+}
+
+.pricing-button.primary {
+  background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 200%;
+  color: #fff;
+  border: 2px solid transparent;
+  animation: gradientShift 3s ease infinite;
+}
+
+.pricing-button.primary:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  animation-play-state: paused;
+}
+
+.pricing-button.featured {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #667eea, #ff6b6b);
+  background-size: 300% 300%;
+  color: #000;
+  border: 2px solid transparent;
+  animation: featuredGradient 4s ease infinite;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.25);
+}
+
+.pricing-button.featured:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(255, 107, 107, 0.35);
+  animation-play-state: paused;
+}
+
+.pricing-button.secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+}
+
+.pricing-button.secondary:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes featuredGradient {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 50% 100%; }
+  75% { background-position: 0% 50%; }
+  100% { background-position: 50% 0%; }
+}
+
+.pricing-note {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pricing-note p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1em;
+  margin: 0;
+}
+
+.pricing-note strong {
+  color: #4ecdc4;
+}
+
+
+/* Responsive Design */
+@media screen and (max-width: 1023px) {
+  .pricing-title {
+    font-size: 3.5em;
+  }
+  
+  .pricing-card.featured {
+    transform: none;
+  }
+  
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .pricing-title {
+    font-size: 2.5em;
+  }
+  
+  .pricing-card {
+    padding: 30px 20px;
+  }
+  
+  .amount {
+    font-size: 3em;
+  }
+  
+  .credits-number {
+    font-size: 2.5em;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <img src="{{ url_for('static', filename='images/5.png') }}" alt="" />
+        <img src="{{ url_for('static', filename='images/6.png') }}" alt="" />
+      </div>
+      <div class="login-container">
+        <!-- User Info or Login Button -->
+        {% if session.user %}
+        <div class="user-info">
+          <div class="user-welcome">
+            <span class="welcome-text">Welcome Back,</span>
+            <span class="user-name">{{ session.user.name or 'Valued User' }}</span>
+          </div>
+          <div class="credits-display">
+            <span class="credits-icon">⭐</span>
+            <span>{{ session.user.credits or 0 }} Credits</span>
+          </div>
+          <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
+        </div>
+        {% else %}
+        <div style="display: flex; gap: 10px;">
+          <button class="login-btn" onclick="openLoginModal()">
+            🔑 Login
+          </button>
+          <button class="login-btn" onclick="openSignUpModal()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">
+            ✨ Sign Up
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </header>
+<!-- Modal for Login (Existing Users) -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeLoginModal()">&times;</span>
+        <h2>🔑 Quick Login</h2>
+        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 20px; text-align: center;">Select your account to login instantly</p>
+        
+        <div id="savedAccountsList">
+          <!-- Saved accounts will be populated here -->
+        </div>
+        
+        <div style="margin: 20px 0; text-align: center; color: rgba(255, 255, 255, 0.6);">
+          <span>Don't see your account?</span>
+        </div>
+        
+        <div class="modal-buttons">
+          <button class="modal-btn secondary" onclick="closeLoginModal(); openSignUpModal();">Sign Up New Account</button>
+          <button class="modal-btn secondary" onclick="closeLoginModal()">Cancel</button>
+        </div>
+        
+        <div id="loginAuthMessage" class="auth-message"></div>
+      </div>
+    </div>
+
+<!-- Modal for Sign Up (New Users) -->
+    <!-- Name Confirmation Modal -->
+    <div id="nameConfirmationModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeNameConfirmationModal()">&times;</span>
+        <h2>🔍 Confirm Your Name</h2>
+        
+        <div style="margin: 20px 0; padding: 20px; background: rgba(78, 205, 196, 0.2); border-radius: 15px; text-align: center;">
+          <div style="color: #4ecdc4; font-weight: bold; margin-bottom: 15px; font-size: 1.2rem;">📁 Terminal Path Preview</div>
+          <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; font-family: 'Courier New', monospace; color: #00ff00; margin: 10px 0;">
+            <span style="color: #4ecdc4;">C:\Users\</span><span id="namePreview" style="color: #ffff00; font-weight: bold;">YourName</span><span style="color: #4ecdc4;">\Desktop\Assignment\</span>
+          </div>
+          <small style="color: rgba(255, 255, 255, 0.9); line-height: 1.4;">
+            This name will be used in your assignment's terminal path to make it unique and personalized.
+          </small>
+        </div>
+        
+        <div style="margin: 20px 0; text-align: center;">
+          <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;">
+            Is "<span id="confirmNameDisplay" style="color: #4ecdc4; font-weight: bold;"></span>" correct?
+          </p>
+        </div>
+        
+        <div class="modal-buttons">
+          <button class="modal-btn primary" onclick="confirmNameAndProceed()" style="background: linear-gradient(45deg, #28a745, #20c997);">
+            ✅ Yes, This is Correct
+          </button>
+          <button class="modal-btn secondary" onclick="editNameAndReturn()" style="background: linear-gradient(45deg, #ffc107, #fd7e14);">
+            ✏️ I Want to Make Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeSignUpModal()">&times;</span>
+        <h2>✨ Sign Up with Firebase Phone OTP</h2>
+        
+        <!-- Step 1: User Details -->
+        <div id="signupStep1">
+          <label for="signupModalName">👤 Your Name:</label>
+          <input type="text" id="signupModalName" placeholder="Enter your full name" required>
+          
+          <label for="signupModalPhone">📞 Phone Number:</label>
+          <input type="tel" id="signupModalPhone" placeholder="Enter Indian mobile number (e.g., 9876543210)" maxlength="10" required>
+          
+          <div style="margin: 20px 0; padding: 15px; background: rgba(78, 205, 196, 0.2); border-radius: 10px; text-align: center;">
+            <div style="color: #4ecdc4; font-weight: bold; margin-bottom: 8px;">📱 Firebase SMS OTP</div>
+            <small style="color: rgba(255, 255, 255, 0.9); line-height: 1.4;">You will receive a text message with a 6-digit OTP code. Please enter the code below.</small>
+          </div>
+          
+          <!-- Invisible reCAPTCHA container -->
+          <div id="recaptcha-container"></div>
+          
+          <div class="modal-buttons">
+            <button class="modal-btn primary" onclick="sendFirebaseOtp()" id="getOtpBtn">
+              <span id="otpBtnText">📱 Get SMS OTP</span>
+              <span id="otpBtnSpinner" style="display: none;">🔄 Sending...</span>
+            </button>
+            <button class="modal-btn secondary" onclick="closeSignUpModal()">Cancel</button>
+          </div>
+        </div>
+        
+        <!-- Step 2: OTP Verification -->
+        <div id="signupOtpContainer" class="otp-container">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="color: #4ecdc4; font-weight: bold; font-size: 1.1rem;">📱 SMS Sent!</div>
+            <small style="color: rgba(255, 255, 255, 0.8);">Please enter the 6-digit code from the text message</small>
+          </div>
+          
+          <label for="signupModalOtp">🔐 Enter 6-Digit OTP:</label>
+          <input type="text" id="signupModalOtp" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}" required>
+          
+          <div style="margin: 15px 0; text-align: left;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="signupRememberMe" checked style="accent-color: #4ecdc4;">
+              <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.9);">Remember me for 30 days</span>
+            </label>
+          </div>
+          
+          <div class="modal-buttons">
+            <button class="modal-btn primary" onclick="verifyFirebaseOtp()" id="verifyOtpBtn">
+              <span id="verifyBtnText">✅ Verify OTP</span>
+              <span id="verifyBtnSpinner" style="display: none;">🔄 Verifying...</span>
+            </button>
+            <button class="modal-btn secondary" onclick="resendFirebaseOtp()" id="resendOtpBtn">
+              🔄 Resend SMS
+            </button>
+          </div>
+        </div>
+        
+        <div id="signupAuthMessage" class="auth-message"></div>
+      </div>
+    </div>
+
+<!-- Question Limit Confirmation Modal -->
+<div id="questionLimitModal" class="question-limit-modal">
+  <div class="question-limit-content">
+    <div class="question-limit-header">
+      <span class="question-limit-icon">⚠️</span>
+      <h2 class="question-limit-title">Question Limit Exceeded</h2>
+    </div>
+    <div class="question-limit-body">
+      <p>Great! We found <strong id="questionCount">0</strong> questions in your document. Since this exceeds our standard 20-question limit, here's what will happen:</p>
+      
+      <div class="question-stats">
+        <div class="stat-row">
+          <span class="stat-label">📝 Questions found:</span>
+          <span class="stat-value" id="totalQuestions">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">🎯 Base processing (20 questions):</span>
+          <span class="stat-value">1 credit</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">➕ Extra questions:</span>
+          <span class="stat-value"><span id="extraQuestions">0</span> × 1 credit each</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">💳 Total credits required:</span>
+          <span class="stat-value highlight" id="totalCredits">0</span>
+        </div>
+      </div>
+      
+      <div class="credits-info">
+        <span class="emoji">💰</span>
+        <strong>Your current balance: <span id="userCredits">0</span> credits</strong>
+      </div>
+      
+      <p class="encouragement-text">✨ You have plenty of credits! Let's solve all your questions efficiently.</p>
+      
+      <div class="question-limit-buttons">
+        <button class="question-limit-btn btn-continue" onclick="confirmQuestionLimit()">
+          <span>🚀 Yes, Process All Questions</span>
+        </button>
+        <button class="question-limit-btn btn-cancel" onclick="cancelQuestionLimit()">
+          <span>❌ Cancel</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Customization Modal -->
+<div id="customizationModal" class="customization-modal">
+  <div class="customization-content">
+    <div class="customization-header">
+      <h2 class="customization-title">🎨 Make My Assignment Unique</h2>
+      <button class="close-btn" onclick="closeCustomizationModal()">&times;</button>
+    </div>
+    
+    <div class="customization-grid">
+      <!-- Live Preview Section -->
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">🔍 Live Preview</label>
+        <div class="preview-container" id="previewContainer" style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; min-height: 200px;">
+          <div class="preview-document">
+            <div class="preview-header" id="previewHeader" style="color: #000000; font-weight: bold; margin-bottom: 15px;">Question 1: Write a Python program to calculate factorial</div>
+            <div class="preview-content" id="previewContent">
+              <p style="color: #000000; margin-bottom: 10px;">Here's a simple Python program to calculate factorial:</p>
+              <div class="preview-code" id="previewCode" style="color: #000000; font-family: 'Consolas', monospace; background-color: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #e9ecef; margin: 10px 0;">
+def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    else:
+        return n * factorial(n-1)</div>
+              <p style="color: #000000; margin-top: 10px;">This function uses recursion to calculate the factorial of a given number.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- HEADING Text Customization -->
+      <div class="form-group" style="grid-column: 1 / -1; border-top: 2px solid #4ecdc4; padding-top: 15px; margin-top: 15px;">
+        <label class="form-label" style="font-size: 1.1em; font-weight: bold; color: #4ecdc4;">🎯 HEADING Text Settings</label>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📝 Heading Font Style</label>
+        <select id="headingFontStyle" class="form-control">
+          <option value="Calibri">Calibri (Default)</option>
+          <option value="Arial">Arial</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Tahoma">Tahoma</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📏 Heading Size (pt)</label>
+        <select id="headingSize" class="form-control">
+          <option value="12">12 pt</option>
+          <option value="14" selected>14 pt (Default)</option>
+          <option value="16">16 pt</option>
+          <option value="18">18 pt</option>
+          <option value="20">20 pt</option>
+          <option value="22">22 pt</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🎨 Heading Color</label>
+        <input type="color" id="headingColor" class="color-input" value="#000000">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">💫 Heading Style</label>
+        <select id="headingStyle" class="form-control">
+          <option value="bold" selected>Bold (Default)</option>
+          <option value="bold_italic">Bold + Italic</option>
+          <option value="bold_underline">Bold + Underline</option>
+          <option value="italic_underline">Italic + Underline</option>
+          <option value="all">Bold + Italic + Underline</option>
+        </select>
+      </div>
+      
+      <!-- QUESTION Text Customization -->
+      <div class="form-group" style="grid-column: 1 / -1; border-top: 2px solid #ff6b6b; padding-top: 15px; margin-top: 15px;">
+        <label class="form-label" style="font-size: 1.1em; font-weight: bold; color: #ff6b6b;">📝 QUESTION Text Settings</label>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📝 Question Font Style</label>
+        <select id="questionFontStyle" class="form-control">
+          <option value="Calibri">Calibri (Default)</option>
+          <option value="Arial">Arial</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Tahoma">Tahoma</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📏 Question Size (pt)</label>
+        <select id="questionSize" class="form-control">
+          <option value="10">10 pt</option>
+          <option value="11" >11 pt</option>
+          <option value="12">12 pt</option>
+          <option value="14" selected>14 pt (Default)</option>
+          <option value="16">16 pt</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🎨 Question Color</label>
+        <input type="color" id="questionColor" class="color-input" value="#000000">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">💫 Question Formatting</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="questionBold">
+            <label for="questionBold">Bold</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="questionItalic">
+            <label for="questionItalic">Italic</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="questionUnderline">
+            <label for="questionUnderline">Underline</label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- CODE Text Customization -->
+      <div class="form-group" style="grid-column: 1 / -1; border-top: 2px solid #45b7d1; padding-top: 15px; margin-top: 15px;">
+        <label class="form-label" style="font-size: 1.1em; font-weight: bold; color: #45b7d1;">💻 CODE Text Settings</label>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📝 Code Font Style</label>
+        <select id="codeFontStyle" class="form-control">
+          <option value="Consolas">Consolas (Default)</option>
+          <option value="Monaco">Monaco</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Lucida Console">Lucida Console</option>
+          <option value="Source Code Pro">Source Code Pro</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📏 Code Size (pt)</label>
+        <select id="codeSize" class="form-control">
+          <option value="9">9 pt</option>
+          <option value="10" >10 pt </option>
+          <option value="11" selected>11 pt (Default)</option>
+          <option value="12">12 pt</option>
+          <option value="14">14 pt</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🎨 Code Color</label>
+        <input type="color" id="codeColor" class="color-input" value="#000000">
+      </div>
+      
+      <!-- GLOBAL Settings -->
+      <div class="form-group" style="grid-column: 1 / -1; border-top: 2px solid #96ceb4; padding-top: 15px; margin-top: 15px;">
+        <label class="form-label" style="font-size: 1.1em; font-weight: bold; color: #96ceb4;">🌍 GLOBAL Document Settings</label>
+      </div>
+      
+      <!-- Line Spacing -->
+      <div class="form-group">
+        <label class="form-label">📐 Line Spacing</label>
+        <select id="lineSpacing" class="form-control">
+          <option value="1.0">Single (1.0)</option>
+          <option value="1.15" selected>1.15 (Default)</option>
+          <option value="1.5">1.5 spacing</option>
+          <option value="2.0">Double (2.0)</option>
+        </select>
+      </div>
+      
+      <!-- Text Alignment -->
+      <div class="form-group">
+        <label class="form-label">📍 Text Alignment</label>
+        <select id="textAlignment" class="form-control">
+          <option value="left" selected>Left Align (Default)</option>
+          <option value="center">Center Align</option>
+          <option value="right">Right Align</option>
+          <option value="justify">Justify</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="customization-actions">
+      <button class="reset-btn" onclick="resetCustomization()">🔄 Reset to Default</button>
+      <button class="apply-btn" onclick="applyCustomization()">✨ Apply Styles</button>
+    </div>
+</div>
+</div>
+
+<!-- CHRIST Template Modal -->
+<div id="christTemplateModal" class="customization-modal">
+  <div class="customization-content">
+    <div class="customization-header">
+      <h2 class="customization-title">🏫 CHRIST University Template</h2>
+      <button class="close-btn" onclick="closeChristTemplateModal()">&times;</button>
+    </div>
+    
+    <div class="customization-grid">
+      <div class="form-group">
+        <label class="form-label">👤 Student Name</label>
+        <input type="text" id="christName" class="form-control" placeholder="Your full name" readonly>
+        <small style="color: rgba(255, 255, 255, 0.7);">Auto-filled from above</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🆔 Register Number</label>
+        <input type="text" id="christRegNo" class="form-control" placeholder="Your register number" readonly>
+        <small style="color: rgba(255, 255, 255, 0.7);">Auto-filled from above</small>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">📚 Course Name</label>
+        <input type="text" id="christCourse" class="form-control" placeholder="e.g., BCA, MCA, B.Tech CSE" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🏛️ Class/Section</label>
+        <input type="text" id="christClass" class="form-control" placeholder="e.g., 3BCA-A, 2MCA-B" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">🔬 Practical Number</label>
+        <input type="text" id="christPractical" class="form-control" placeholder="e.g., Practical 1, Lab 5" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">👨‍🏫 Teacher Name</label>
+        <input type="text" id="christTeacher" class="form-control" placeholder="e.g., Dr. John Doe" required>
+      </div>
+      
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <div style="background: rgba(78, 205, 196, 0.1); padding: 15px; border-radius: 10px; border: 1px solid rgba(78, 205, 196, 0.3);">
+          <div style="color: #4ecdc4; font-weight: bold; margin-bottom: 8px;">📋 Template Preview</div>
+          <small style="color: rgba(255, 255, 255, 0.9); line-height: 1.4;">
+            This will add an official CHRIST University template as the first page of your document with all the details you provide above.
+          </small>
+        </div>
+      </div>
+    </div>
+    
+    <div class="customization-actions">
+      <button class="reset-btn" onclick="closeChristTemplateModal()">❌ Cancel</button>
+      <button class="apply-btn" onclick="applyChristTemplate()">✅ Apply CHRIST Template</button>
+    </div>
+  </div>
+</div>
+
+    
+    <!-- Hero Section: Banner & Forms Overlay -->
+    <div id="heroSection" style="position: relative;">
+      <section class="banner">
+        <div class="content">
+          <h1 class="left">code de bhai . com</h1>
+          <div class="right">
+            <h2>Tharan</h2>
+            <p>made by</p>
+            <p>just upload your pdf or manually enter your question <br />and get the solution in a Word document</p>
+          </div>
+          <div class="image">
+            <img src="{{ url_for('static', filename='images/mouth.png') }}" alt="" />
+          </div>
+        </div>
+      </section>
+      <!-- Forms Section Overlaid on the Banner -->
+      <section id="formsSection">
+        <div class="container">
+          <!-- Left Box: PDF Upload Form -->
+          <div class="half">
+            <div class="form-container">
+              <h1>📝 Upload Your PDF with Questions</h1>
+              <form id="uploadForm" enctype="multipart/form-data">
+                <label for="nameUpload">👤 Name:</label>
+                <input type="text" id="nameUpload" name="name" />
+        
+                <label for="regNoUpload">🆔 Register Number:</label>
+                <input type="text" id="regNoUpload" name="regNo" />
+        
+                <!-- Upload section screenshot style -->
+                <label for="screenshotStyleUpload">🖼️ Screenshot Style:</label>
+                <select id="screenshotStyleUpload" name="screenshot_style">
+                  <option value="vscode">VS Code (Windows)</option>
+                  <option value="mac">Mac OS Terminal (Dark)</option>
+                  <option value="simple">Simple</option>
+                </select>
+                <!-- End upload section -->
+                <select id="languageUpload" name="language">
+                  <option value="python">Python</option>
+                  <option value="cpp">C++</option>
+                  <option value="csharp">C#</option>
+                  <option value="c">C</option>
+                  <option value="java">Java</option>
+                  <option value="javascript">JavaScript</option>
+                </select>
+        
+                <label for="templateUpload">🎨 College Template:</label>
+                <select id="templateUpload" name="template">
+                  <option value="none">No Template</option>
+                  <option value="provide">Provide Template(beta)</option>
+                  <option value="christ">CHRIST Template</option>
+                </select>
+        
+                <!-- Template Upload Section (Hidden by default) -->
+                <div id="templateUploadSection" style="display: none; margin-top: 15px;">
+                  <label for="templateFile">📄 Upload Template Image:</label>
+                  <input type="file" id="templateFile" name="templateFile" accept=".jpg,.jpeg,.png,.pdf" />
+                  <small style="color: rgba(255, 255, 255, 0.7); display: block; margin-top: 5px;">
+                    Upload your college template (JPG, PNG, or PDF)
+                  </small>
+                </div>
+        
+                <label for="fileUpload">📂 Upload PDF:</label>
+                <input type="file" id="fileUpload" name="file" accept=".pdf"  />
+        
+                <!-- Customization Button -->
+                <button type="button" class="customize-btn" onclick="openCustomizationModal()">
+                  🎨 Make My Assignment Unique
+                </button>
+        
+                <button type="submit">code de bhai !</button>
+              </form>
+              <div id="uploadProgressContainer" class="progress-container">
+                <div class="progress-wrapper">
+                  <div class="progress-content">
+                    <div class="progress-animation">
+                      <div class="loading-spinner" id="uploadSpinner"></div>
+                    </div>
+                    <div class="time-estimate">
+                      <span class="time-icon"></span>
+                      <span id="uploadEstimatedTime">your assigment is being processed bhai...</span>
+                    </div>
+                    <div class="task-stage">
+                      <span class="stage-icon"></span>
+                      <span id="uploadProgressText">Initializing...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="message-box" id="uploadMessage"></div>
+            </div>
+          </div>
+      
+          <!-- Separator -->
+          <div class="separator"></div>
+      
+          <!-- Right Box: Manual Question Form -->
+          <div class="half">
+            <div class="form-container">
+              <h1>Manually Enter Your Question</h1>
+              <form id="questionForm">
+                <label for="nameQuestion">👤 Name:</label>
+                <input type="text" id="nameQuestion" name="name" />
+        
+                <label for="regNoQuestion">🆔 Register Number:</label>
+                <input type="text" id="regNoQuestion" name="regNo"  />
+        
+                <!-- Manual section screenshot style -->
+                <label for="screenshotStyleManual">🖼️ Screenshot Style:</label>
+                <select id="screenshotStyleManual" name="screenshot_style">
+                  <option value="vscode">VS Code (Windows)</option>
+                  <option value="mac">Mac OS Terminal (Dark)</option>
+                  <option value="simple">Simple</option>
+                </select>
+                <!-- End manual section -->
+                <select id="languageManual" name="language" >
+                  <option value="python">Python</option>
+                  <option value="cpp">C++</option>
+                  <option value="csharp">C#</option>
+                  <option value="c">C</option>
+                  <option value="java">Java</option>
+                  <option value="javascript">JavaScript</option>
+                </select>
+        
+                <label for="templateManual">🎨 College Template:</label>
+                <select id="templateManual" name="template">
+                  <option value="none">No Template</option>
+                  <option value="provide">Provide Template(beta)</option>
+                  <option value="christ">CHRIST Template</option>
+                </select>
+        
+                <!-- Template Upload Section for Manual Form (Hidden by default) -->
+                <div id="templateManualSection" style="display: none; margin-top: 15px;">
+                  <label for="templateFileManual">📄 Upload Template Image:</label>
+                  <input type="file" id="templateFileManual" name="templateFile" accept=".jpg,.jpeg,.png,.pdf" />
+                  <small style="color: rgba(255, 255, 255, 0.7); display: block; margin-top: 5px;">
+                    Upload your college template (JPG, PNG, or PDF)
+                  </small>
+                </div>
+        
+                <div id="questionsContainer">
+                  <div class="question-wrapper">
+                    <label for="question-1">❓ Enter Your Question:</label>
+                    <textarea id="question-1" name="questions" rows="3"></textarea>
+                    <button type="button" class="deleteQuestion">✖</button>
+                  </div>
+                </div>
+        
+                <!-- Customization Button -->
+                <button type="button" class="customize-btn" onclick="openCustomizationModal()">
+                  🎨 Make My Assignment Unique
+                </button>
+        
+                <div class="button-container">
+                  <button type="button" id="addMoreButton">➕ Add</button>
+                  <button type="submit">code de bhai !</button>
+                </div>
+              </form>
+              <div id="manualProgressContainer" class="progress-container">
+                <div class="progress-wrapper">
+                  <div class="progress-content">
+                    <div class="progress-animation">
+                      <div class="loading-spinner" id="manualSpinner"></div>
+                    </div>
+                    <div class="time-estimate">
+                      <span class="time-icon">⏱️</span>
+                      <span id="manualEstimatedTime">Calculating approximate time...</span>
+                    </div>
+                    <div class="task-stage">
+                      <span class="stage-icon">🔄</span>
+                      <span id="manualProgressText">Initializing...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="message-box" id="questionMessage"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- pricing section  -->
+      <section id="pricingSection" class="pricing-section">
+      <div class="pricing-container">
+        <h2 class="pricing-title autoShow">Choose Your Plan</h2>
+        <p class="pricing-subtitle autoShow">Select the perfect plan for your coding needs</p>
+        
+        
+        <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+        <script>
+          
+          
+          // Unified payment function for all buttons
+          async function initiatePayment(planType, buttonElement) {
+            try {
+              console.log('🚀 Payment initiated for plan:', planType);
+              
+              // Check if user is logged in first
+              const user = await checkUserAuth();
+              if (!user) {
+                alert('Please login first to purchase a plan!');
+                openLoginModal();
+                return;
+              }
+              
+              console.log('✅ User authenticated:', user.phone_number);
+              
+              // Define plan details
+              const plans = {
+                'starter': { amount: 99, name: 'Starter Plan', credits: 10 },
+                'monthly': { amount: 299, name: 'Monthly Saver', credits: 50 },
+                'power': { amount: 799, name: 'Power Plan', credits: 150 }
+              };
+              
+              const selectedPlan = plans[planType];
+              if (!selectedPlan) {
+                throw new Error('Invalid plan selected');
+              }
+              
+              console.log('📋 Selected plan:', selectedPlan);
+              
+              // Show loading state - use passed button element or try to find it
+              const button = buttonElement || event?.target;
+              let originalText = '';
+              if (button) {
+                originalText = button.textContent;
+                button.disabled = true;
+                button.textContent = '🔄 Processing...';
+              }
+              
+              try {
+                // Create payment session
+                console.log('📡 Creating payment session...');
+                const response = await fetch('/create-payment-session', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    amount: selectedPlan.amount,
+                    currency: 'INR',
+                    plan_type: planType,
+                    user: {
+                      name: user.name || 'Customer',
+                      email: user.email || `${user.phone_number}@codedebhai.com`,
+                      phone: user.phone_number
+                    }
+                  })
+                });
+                
+                console.log('📡 Response status:', response.status);
+                const data = await response.json();
+                console.log('📡 Payment session response:', data);
+                
+                if (data.success && data.payment_session_id) {
+                  console.log('🔗 Initializing Cashfree SDK...');
+                  
+                  // Initialize Cashfree SDK
+                  const cashfree = Cashfree({
+                    mode: "sandbox" // Change to "production" for live payments
+                  });
+                  
+                  // Use Cashfree SDK to redirect to checkout
+                  const checkoutOptions = {
+                    paymentSessionId: data.payment_session_id,
+                    redirectTarget: "_self"
+                  };
+                  
+                  console.log('🔗 Redirecting to Cashfree checkout with session:', data.payment_session_id);
+                  cashfree.checkout(checkoutOptions);
+                  
+                } else {
+                  throw new Error(data.error || 'Failed to create payment session');
+                }
+              } finally {
+                // Re-enable button after delay or error
+                if (button) {
+                  setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                  }, 2000); // Longer delay for SDK initialization
+                }
+              }
+              
+            } catch (error) {
+              console.error("❌ Payment error:", error);
+              alert(`Payment failed: ${error.message}. Please try again.`);
+            }
+          }
+          
+          async function checkUserAuth() {
+            try {
+              const response = await fetch('/check_auth');
+              const data = await response.json();
+              return data.authenticated ? data.user : null;
+            } catch (error) {
+              console.error('Auth check failed:', error);
+              return null;
+            }
+          }
+        </script>
+        
+        <div class="pricing-grid">
+          <!-- Starter Plan -->
+          <div class="pricing-card autoShow">
+            <div class="pricing-header">
+              <h3>Starter Plan</h3>
+              <div class="pricing-badge">New Entry</div>
+            </div>
+            <div class="pricing-price">
+              <span class="currency">₹</span>
+              <span class="amount">99</span>
+              <span class="period">/one-time</span>
+            </div>
+            <div class="pricing-credits">
+              <span class="credits-number">10</span>
+              <span class="credits-text">Credits</span>
+            </div>
+            <ul class="pricing-features">
+              <li>✅ 1 credit = 1 solved pdf (max 20 question )</li>
+              <li>✅ Entry-level for new users</li>
+              <li>✅ Ideal for light users</li>
+              <li>✅ Perfect for trying us out!</li>
+              <li>❌ No credits rollover</li>
+              <li>✅ Test drive our service</li>
+         
+            </ul>
+            <button class="pricing-button secondary" onclick="initiatePayment('starter', this)">🚀 Pay Now</button>
+          </div>
+
+          <!-- Monthly Saver -->
+          <div class="pricing-card autoShow featured">
+            <div class="pricing-header">
+              <h3>Monthly Saver</h3>
+              <div class="pricing-badge best-value">Best Value</div>
+            </div>
+            <div class="pricing-price">
+              <span class="currency">₹</span>
+              <span class="amount">299</span>
+              <span class="period">/month</span>
+            </div>
+            <div class="pricing-credits">
+              <span class="credits-number">50</span>
+              <span class="credits-text">Credits</span>
+            </div>
+            <div class="savings">Save 33% per question!</div>
+            <ul class="pricing-features">
+              <li>✅ 50 pdf Solutions</li>
+              <li>✅ Flexibility & reliability</li>
+              <li>✅ Solve more when needed</li>
+              <li>✅ Great for regular assignments</li>
+              <li>✅ credits rollover to next month if renewed </li>
+              <li>✅ Perfect for semester workload</li>
+              <li>✅ Most Popular Among students</li>
+            </ul>
+            <button class="pricing-button featured" onclick="initiatePayment('monthly', this)">💳 Pay Now</button>
+          </div>
+          
+          <!-- Power Plan -->
+       <div class="pricing-card autoShow">
+  <div class="pricing-header">
+    <h3>Power Plan</h3>
+    <div class="pricing-badge">3 Months Access</div>
+  </div>
+  <div class="pricing-price">
+    <span class="currency">₹</span>
+    <span class="amount">799</span>
+    <span class="period">/3 months</span>
+  </div>
+  <div class="pricing-credits">
+    <span class="credits-number">150</span>
+    <span class="credits-text">Credits</span>
+  </div>
+  <div class="savings">Save 45% vs Starter!</div>
+  <ul class="pricing-features">
+    <li>✅ 150 pdf solved </li>
+    <li>✅ Valid for 3 months</li>
+    <li>✅ Priority solving queue</li>
+     <li>✅ credits rollover to next month if renewed </li>
+    <li>✅ Perfect for exam rush & semester load</li>
+    <li>✅ Maximum value for consistent users</li>
+  </ul>
+  <button class="pricing-button primary" onclick="initiatePayment('power', this)">⚡ Pay Now</button>
+</div>
+          
+        </div>
+        
+        <div class="pricing-note autoShow">
+          <p>💡 <strong>Pro Tip:</strong> One credit = 1 solved PDF question. Perfect for last-minute submissions and exam prep! Choose the plan that fits your semester workload.</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- The Rest of the Landing Page Content -->
+    <section class="grid grid-1">
+      <figure>
+        <img src="{{ url_for('static', filename='images/sich.png') }}" alt="" />
+      </figure>
+      <figure>
+        <img src="{{ url_for('static', filename='images/3.png') }}" alt="" class="autoRotate" />
+      </figure>
+      <h2 class="autoShow">about me</h2>
+    </section>
+    
+    <section class="grid grid-2">
+      <div class="autoShow">
+        <figure>
+          <img src="{{ url_for('static', filename='images/6.png') }}" alt="" />
+        </figure>
+        <p>
+          The magic here is that it converts your problems into a neat Word DOCX file, making it super simple to see your solutions come to life!
+        </p>
+      </div>
+      <div class="autoShow">
+        Hey there, I'm THARAN, a 3rd year student at Christ University in the buzzing Delhi NCR. I built this website just for the fun of it so you can easily solve your coding questions—whether they're in a PDF or entered manually.
+      </div>
+      <div class="autoShow">
+        <figure>
+          <img src="{{ url_for('static', filename='images/2.png') }}" alt="" />
+        </figure>
+        <p>
+          I made this project because I believe learning should be as chill and enjoyable as hanging out with friends. Use it as much as you want, 🍑 remember not to overuse it—basics matter, you feel me?
+        </p>
+      </div>
+      <div class="autoShow">
+        <figure>
+          <img src="{{ url_for('static', filename='images/candy.png') }}" alt="" />
+        </figure>
+      </div>
+    </section>
+    
+    <section class="grid grid-3">
+      <div class="autoBLur">football</div>
+      <div class="autoBLur">beaches</div>
+      <div class="autoBLur">hill-stations</div>
+      <div class="autoBLur">are</div>
+      <div class="autoBLur">heaven</div>
+    </section>
+  </main>
+  <footer>
+    <div class="grid grid-5 content">
+      <div class="footer-info">
+        <p>
+          my instagram - <a href="https://www.instagram.com/tharanx_x?igsh=MXF2eWx1bm5reXIxeQ==" style="color:greenyellow; text-decoration: none;">THARANX_X</a>. For design, post-production and branding contact <a href="https://www.instagram.com/thevibhash01?igsh=NG82YWM5bnNjeXg2" style="color:greenyellow; text-decoration: none;">thevibhash01</a>.
+        </p>
+        <div class="insta-icon">
+          <!-- Instagram Icon as Inline SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="30" height="30" viewBox="0 0 24 24">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.31.975.975 1.248 2.242 1.31 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.336 2.633-1.31 3.608-.975.975-2.242 1.248-3.608 1.31-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.336-3.608-1.31-.975-.975-1.248-2.242-1.31-3.608C2.012 15.584 2 15.204 2 12s.012-3.584.07-4.85c.062-1.366.336-2.633 1.31-3.608.975-.975 2.242-1.248 3.608-1.31C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.012 7.052.07 5.775.127 4.6.415 3.635 1.38c-.965.965-1.253 2.14-1.31 3.417C2.012 5.668 2 6.077 2 9.337v5.326c0 3.26.012 3.669.07 4.948.057 1.277.345 2.452 1.31 3.417.965.965 2.14 1.253 3.417 1.31 1.28.058 1.689.07 4.948.07s3.669-.012 4.948-.07c1.277-.057 2.452-.345 3.417-1.31.965-.965 1.253-2.14 1.31-3.417.058-1.28.07-1.689.07-4.948V9.337c0-3.26-.012-3.669-.07-4.948-.057-1.277-.345-2.452-1.31-3.417-.965-.965-2.14-1.253-3.417-1.31C15.668.012 15.259 0 12 0zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998zm6.406-11.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+<script>
+    // ======= JavaScript for Modal Login =======
+    function openModal() {
+      document.getElementById('loginModal').style.display = 'block';
+    }
+    
+    // Scroll to forms section
+    function scrollToForms() {
+      const formsSection = document.getElementById('formsSection');
+      if (formsSection) {
+        formsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    
+    function closeModal() {
+      document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('otpContainer').style.display = 'none';
+      document.getElementById('modalAuthMessage').textContent = '';
+      document.getElementById('modalName').value = '';
+      document.getElementById('modalPhone').value = '';
+      document.getElementById('modalOtp').value = '';
+      document.getElementById('rememberMe').checked = true; // Reset to default
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('loginModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    
+    async function sendOtp() {
+      const nameInput = document.getElementById('modalName');
+      const phoneInput = document.getElementById('modalPhone');
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const authMessage = document.getElementById('modalAuthMessage');
+      
+      if (!phone) {
+        authMessage.textContent = 'Please enter your phone number';
+        authMessage.className = 'auth-message error';
+        return;
+      }
+      
+      if (!name) {
+        authMessage.textContent = 'Please enter your name';
+        authMessage.className = 'auth-message error';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/send_otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, name })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to send OTP');
+        }
+        
+        authMessage.textContent = 'OTP sent successfully! Check your phone.';
+        authMessage.className = 'auth-message success';
+        document.getElementById('otpContainer').style.display = 'block';
+      } catch (error) {
+        authMessage.textContent = `Error: ${error.message}`;
+        authMessage.className = 'auth-message error';
+      }
+    }
+    
+    async function verifyOtp() {
+      const otpInput = document.getElementById('modalOtp');
+      const rememberMeInput = document.getElementById('rememberMe');
+      const otp = otpInput.value.trim();
+      const rememberMe = rememberMeInput.checked;
+      const authMessage = document.getElementById('modalAuthMessage');
+      
+      if (!otp) {
+        authMessage.textContent = 'Please enter the OTP';
+        authMessage.className = 'auth-message error';
+        return;
+      }
+      
+      try {
+        const response = await fetch('/verify_otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ otp, remember_me: rememberMe })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'OTP verification failed');
+        }
+        
+        authMessage.textContent = 'Login successful! Redirecting...';
+        authMessage.className = 'auth-message success';
+        
+        // Close modal and reload page immediately
+        setTimeout(() => {
+          closeModal();
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        authMessage.textContent = `Error: ${error.message}`;
+        authMessage.className = 'auth-message error';
+      }
+    }
+
+    // ======= JavaScript for Forms Section =======
+    function showMessage(elementId, message, color) {
+      const messageBox = document.getElementById(elementId);
+      messageBox.textContent = message;
+      messageBox.style.display = "block";
+      messageBox.style.backgroundColor = color;
+      messageBox.style.padding = "10px";
+      messageBox.style.borderRadius = "8px";
+      messageBox.style.fontWeight = "bold";
+    }
+    
+// ============= Enhanced Progress Tracking with WebSocket =============
+
+// Socket.IO variables (enhanced implementation below)
+let currentTaskId = null;
+let progressUpdateInterval;
+
+function showEnhancedProgress(taskId, taskType = 'pdf') {
+  const progressContainer = document.getElementById(taskType === 'pdf' ? 'uploadProgressContainer' : 'manualProgressContainer');
+  
+  if (progressContainer) {
+    progressContainer.style.display = 'flex';
+    currentTaskId = taskId;
+    
+    // Join task room for real-time updates
+    if (socket) {
+      socket.emit('join_task', { task_id: taskId });
+    }
+    
+    // Initialize progress UI
+    updateProgressUI({
+      progress: 0,
+      stage_name: 'Initializing...',
+      estimated_total_time: 'Calculating...',
+      elapsed_time: 0
+    });
+    
+    // Start elapsed time counter
+    const startTime = Date.now();
+    progressUpdateInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const elapsedTimeEl = document.getElementById('elapsedTime');
+      if (elapsedTimeEl) {
+        elapsedTimeEl.textContent = `${elapsed}s`;
+      }
+    }, 1000);
+  }
+}
+
+function hideProgress() {
+  const uploadProgress = document.getElementById('uploadProgressContainer');
+  const manualProgress = document.getElementById('manualProgressContainer');
+  
+  if (uploadProgress) uploadProgress.style.display = 'none';
+  if (manualProgress) manualProgress.style.display = 'none';
+  
+  if (progressUpdateInterval) {
+    clearInterval(progressUpdateInterval);
+    progressUpdateInterval = null;
+  }
+  
+  if (currentTaskId && socket) {
+    socket.emit('leave_task', { task_id: currentTaskId });
+    currentTaskId = null;
+  }
+}
+
+// Initialize enhanced Socket.IO when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  initializeSocketIO();
+});
+
+// ============= Enhanced Form Submission =============
+
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      console.log('Upload form submitted!');
+      
+      const formData = new FormData(e.target);
+      
+      // Add screenshot style from the form
+      const screenshotStyle = document.getElementById('screenshotStyleUpload').value;
+      formData.append('screenshot_style', screenshotStyle);
+      
+      // Add customization settings if they exist
+      const customizationData = {};
+      
+      // Include styling customization
+      if (window.customizationSettings) {
+        Object.assign(customizationData, window.customizationSettings);
+      }
+      
+      // Include CHRIST template data
+      if (window.christTemplateData) {
+        customizationData.christTemplateData = window.christTemplateData;
+      }
+      
+      // Append combined customization data if any exists
+      if (Object.keys(customizationData).length > 0) {
+        formData.append('customization', JSON.stringify(customizationData));
+      }
+      
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      const progressText = document.getElementById("uploadProgressText");
+      const progressTimeEl = document.getElementById("uploadEstimatedTime");
+      const startTime = Date.now(); // Define startTime at the beginning
+      
+      // First, check question count
+      progressContainer.style.display = "flex";
+      if (progressTimeEl) progressTimeEl.textContent = "Calculating approximate time...";
+      if (progressText) progressText.textContent = "Checking PDF...";
+      
+      try {
+        // Check PDF questions first
+        const checkResponse = await fetch('/check_pdf_questions', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (checkResponse.ok) {
+          const checkData = await checkResponse.json();
+          
+          // If exceeds 20 questions, show custom confirmation modal
+          if (checkData.exceeds_limit) {
+            progressContainer.style.display = "none";
+            
+            // Store form data globally for later use
+            window.pendingFormData = formData;
+            window.pendingStartTime = startTime;
+            
+            // Show custom modal with data
+            showQuestionLimitModal(checkData);
+            return;
+          }
+          
+          if (!checkData.has_sufficient_credits) {
+            throw new Error(`Insufficient credits! You need ${checkData.total_credits_required} credits but have ${checkData.user_credits}.`);
+          }
+
+          // Show an estimated time beside spinner based on questions + server load
+          await computeAndDisplayEstimatedTime('pdf', checkData.question_count);
+        }
+        
+        // Proceed with actual processing
+        // Create AbortController for timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes timeout
+        
+        const response = await fetch('/upload_pdf', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+          headers: {
+            'Connection': 'keep-alive'
+          }
+        });
+        
+        clearTimeout(timeoutId);
+        
+        // Get task ID from response headers
+        const taskId = response.headers.get('X-Task-ID');
+        if (taskId) {
+          showEnhancedProgress(taskId, 'pdf');
+        }
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'Solved_Assignment.docx';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          progressContainer.style.display = "none";
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+          showMessage('uploadMessage', `File processed ✅ (${elapsed} seconds)`, "black");
+          // Refresh credit display after successful operation
+          refreshCreditDisplay();
+        } else {
+          let errorMessage;
+          try {
+            const errorData = await response.json();
+            
+            // Handle requires_confirmation response
+            if (errorData.requires_confirmation) {
+              const confirmed = confirm(
+                `⚠️ Question Limit Warning\n\n` +
+                `${errorData.message}\n\n` +
+                `Do you want to continue?`
+              );
+              
+              if (confirmed) {
+                // Add confirmation flag and retry
+                formData.append('confirmed', 'true');
+                
+                // Create new AbortController for retry
+                const retryController = new AbortController();
+                const retryTimeoutId = setTimeout(() => retryController.abort(), 300000);
+                
+                const retryResponse = await fetch('/upload_pdf', {
+                  method: 'POST',
+                  body: formData,
+                  signal: retryController.signal,
+                  headers: {
+                    'Connection': 'keep-alive'
+                  }
+                });
+                
+                clearTimeout(retryTimeoutId);
+                
+                if (retryResponse.ok) {
+                  const blob = await retryResponse.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = 'Solved_Assignment.docx';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  progressContainer.style.display = "none";
+                  const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                  showMessage('uploadMessage', `File processed ✅ (${elapsed} seconds)`, "black");
+                  refreshCreditDisplay();
+                  return;
+                } else {
+                  const retryError = await retryResponse.json();
+                  throw new Error(retryError.error || 'Error processing file after confirmation.');
+                }
+              } else {
+                progressContainer.style.display = "none";
+                return;
+              }
+            }
+            
+            errorMessage = errorData.error || 'Error processing file.';
+            
+            // Handle insufficient credits error
+            if (response.status === 402) {
+              errorMessage = "Insufficient credits! Please purchase more credits to continue.";
+              // Optionally scroll to pricing section
+              setTimeout(() => {
+                document.getElementById('pricingSection')?.scrollIntoView({ behavior: 'smooth' });
+              }, 2000);
+            }
+          } catch {
+            const errorText = await response.text();
+            errorMessage = `Unexpected response: ${errorText}`;
+          }
+          throw new Error(errorMessage);
+        }
+      } catch (error) {
+        progressContainer.style.display = "none";
+        
+        // Handle specific error types
+        if (error.name === 'AbortError') {
+          showMessage('uploadMessage', 'Upload timeout. Please try again with a smaller file.', "red");
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_RESET')) {
+          showMessage('uploadMessage', 'Connection lost. Please check your internet and try again.', "red");
+        } else {
+          showMessage('uploadMessage', error.message, "red");
+        }
+        
+        console.error('Upload error:', error);
+      }
+    });
+
+    // Credit update function removed
+    
+    document.getElementById("questionForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      console.log('Manual question form submitted!');
+      const progressContainer = document.getElementById("manualProgressContainer");
+      const progressText = document.getElementById("manualProgressText");
+      const progressTimeEl = document.getElementById("manualEstimatedTime");
+      const startTime = Date.now(); // Define startTime at the beginning
+      progressContainer.style.display = "flex";
+      if (progressTimeEl) progressTimeEl.textContent = "Calculating approximate time...";
+      if (progressText) progressText.textContent = "Analyzing questions...";
+      const questions = [];
+      document.querySelectorAll('[name="questions"]').forEach(input => {
+        if (input.value.trim()) questions.push(input.value.trim());
+      });
+      const payload = {
+        name: document.getElementById("nameQuestion").value.trim(),
+        regNo: document.getElementById("regNoQuestion").value.trim(),
+        language: document.getElementById("languageManual").value,
+        template: document.getElementById("templateManual").value,
+        screenshot_style: document.getElementById("screenshotStyleManual").value,
+        questions
+      };
+      
+      // Add customization settings if they exist
+      const customizationData = {};
+      
+      // Include styling customization
+      if (window.customizationSettings) {
+        Object.assign(customizationData, window.customizationSettings);
+      }
+      
+      // Include CHRIST template data
+      if (window.christTemplateData) {
+        customizationData.christTemplateData = window.christTemplateData;
+      }
+      
+      // Add combined customization data if any exists
+      if (Object.keys(customizationData).length > 0) {
+        payload.customization = customizationData;
+      }
+      
+      // Also ensure the template field from the form is included
+      payload.template = document.getElementById("templateManual").value;
+
+      // Display a load-adjusted estimate beside spinner for manual flow
+      await computeAndDisplayEstimatedTime('manual', questions.length);
+
+      try {
+        const response = await fetch("/manual_solve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        // Get task ID from response headers
+        const taskId = response.headers.get('X-Task-ID');
+        if (taskId) {
+          showEnhancedProgress(taskId, 'manual');
+        }
+        if (!response.ok) {
+          let errorMessage;
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || "Error solving questions.";
+            
+            // Handle insufficient credits error
+            if (response.status === 402) {
+              errorMessage = "Insufficient credits! Please purchase more credits to continue.";
+              // Optionally scroll to pricing section
+              setTimeout(() => {
+                document.getElementById('pricingSection')?.scrollIntoView({ behavior: 'smooth' });
+              }, 2000);
+            }
+          } catch {
+            errorMessage = `Unexpected response: ${response.statusText}`;
+          }
+          throw new Error(errorMessage);
+        }
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "Solved_Questions.docx";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        progressContainer.style.display = "none";
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        showMessage("questionMessage", `Questions solved ✅ (${elapsed} seconds)`, "black");
+        // Refresh credit display after successful operation
+        refreshCreditDisplay();
+      } catch (error) {
+        console.error("Error solving questions:", error);
+        progressContainer.style.display = "none";
+        showMessage("questionMessage", error.message, "black");
+      }
+    });
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      // Template selection dropdown handler
+      const templateSelect = document.getElementById("templateUpload");
+      const templateUploadSection = document.getElementById("templateUploadSection");
+      
+      if (templateSelect && templateUploadSection) {
+        templateSelect.addEventListener("change", function() {
+          const selectedValue = this.value;
+          
+          if (selectedValue === "provide") {
+            templateUploadSection.style.display = "block";
+            // Make template file input required when user selects "provide"
+            document.getElementById("templateFile").required = true;
+          } else if (selectedValue === "christ") {
+            templateUploadSection.style.display = "none";
+            document.getElementById("templateFile").required = false;
+            // Open CHRIST template modal
+            openChristTemplateModal();
+          } else {
+            templateUploadSection.style.display = "none";
+            // Remove required attribute when not needed
+            document.getElementById("templateFile").required = false;
+          }
+        });
+      }
+      
+      // Template selection dropdown handler for manual form
+      const templateManualSelect = document.getElementById("templateManual");
+      const templateManualSection = document.getElementById("templateManualSection");
+      
+      if (templateManualSelect && templateManualSection) {
+        templateManualSelect.addEventListener("change", function() {
+          const selectedValue = this.value;
+          
+          if (selectedValue === "provide") {
+            templateManualSection.style.display = "block";
+            // Make template file input required when user selects "provide"
+            const templateManualFile = document.getElementById("templateManualFile");
+            if (templateManualFile) {
+              templateManualFile.required = true;
+            }
+          } else if (selectedValue === "christ") {
+            templateManualSection.style.display = "none";
+            const templateManualFile = document.getElementById("templateManualFile");
+            if (templateManualFile) {
+              templateManualFile.required = false;
+            }
+            // Open CHRIST template modal
+            openChristTemplateModal();
+          } else {
+            templateManualSection.style.display = "none";
+            // Remove required attribute when not needed
+            const templateManualFile = document.getElementById("templateManualFile");
+            if (templateManualFile) {
+              templateManualFile.required = false;
+            }
+          }
+        });
+      }
+      
+      let questionCount = 1;
+      const addBtn = document.getElementById("addMoreButton");
+      const questionsContainer = document.getElementById("questionsContainer");
+      addBtn.addEventListener("click", () => {
+        questionCount++;
+        const newQuestionDiv = document.createElement("div");
+        newQuestionDiv.classList.add("question-wrapper");
+        newQuestionDiv.innerHTML = `
+          <label for="question-${questionCount}">❓ Enter Your Question ${questionCount}:</label>
+          <textarea id="question-${questionCount}" name="questions" rows="3" required></textarea>
+          <button type="button" class="deleteQuestion">✖</button>
+        `;
+        questionsContainer.appendChild(newQuestionDiv);
+        newQuestionDiv.scrollIntoView({ behavior: "smooth", block: "end" });
+        newQuestionDiv.querySelector(".deleteQuestion").addEventListener("click", () => {
+          if (document.querySelectorAll(".question-wrapper").length > 1) {
+            newQuestionDiv.remove();
+          } else {
+            alert("You must have at least one question!");
+          }
+        });
+      });
+      document.querySelector(".deleteQuestion").addEventListener("click", function () {
+        if (document.querySelectorAll(".question-wrapper").length > 1) {
+          this.parentElement.remove();
+        } else {
+          alert("You must have at least one question!");
+        }
+      });
+      
+      // Check session status on page load only if user section exists
+      if (document.querySelector('.user-info')) {
+        checkSessionStatus();
+      }
+  });
+
+  // Check session status function
+  async function checkSessionStatus() {
+    try {
+      const response = await fetch('/check_session_status');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated) {
+          console.log('Session is valid');
+          // Update credit display if needed
+          if (data.user && data.user.credits !== undefined) {
+            const creditDisplay = document.querySelector('.credits-display');
+            if (creditDisplay) {
+              creditDisplay.innerHTML = `<span class="credits-icon">⭐</span><span>${data.user.credits} Credits</span>`;
+            }
+          }
+        } else {
+          console.log('User not authenticated');
+        }
+      } else {
+        // Session might be expired, but don't reload automatically
+        console.log('Session check failed, but continuing...');
+      }
+    } catch (error) {
+      console.error('Error checking session status:', error);
+      // Don't reload on error, just log it
+    }
+  }
+
+  // Refresh credit display function
+  async function refreshCreditDisplay() {
+    try {
+      const response = await fetch('/refresh_user_session', { method: 'POST' });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          // Update credit display if user is logged in
+          const creditDisplay = document.querySelector('.credits-display');
+          if (creditDisplay) {
+            creditDisplay.innerHTML = `<span class="credits-icon">⭐</span><span>${data.user.credits} Credits</span>`;
+          }
+          console.log('Credit display refreshed:', data.user.credits);
+        }
+      } else {
+        console.log('Failed to refresh credits:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error refreshing credit display:', error);
+    }
+  }
+
+  // New Login/Signup Modal Functions
+
+  function openLoginModal() {
+    document.getElementById('loginModal').style.display = 'block';
+    loadSavedAccounts();
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('loginAuthMessage').textContent = '';
+  }
+
+  function openSignUpModal() {
+    // Auto-populate name from session if available
+    populateNameFromSession();
+    
+    // Show confirmation popup if user is logged in
+    const userInfoElement = document.querySelector('.user-name');
+    if (userInfoElement && userInfoElement.textContent !== 'Valued User') {
+      const userName = userInfoElement.textContent.trim();
+      const confirmed = confirm(
+        `🔔 Username Confirmation\n\n` +
+        `The username "${userName}" will be used in your terminal paths and document headers.\n\n` +
+        `Example: /home/${userName}/projects/\n\n` +
+        `Do you want to continue with this username?`
+      );
+      
+      if (!confirmed) {
+        return; // Don't open signup modal if user cancels
+      }
+    }
+    
+    document.getElementById('signupModal').style.display = 'block';
+  }
+  
+  // Function to populate name fields from user session data
+  async function populateNameFromSession() {
+    try {
+      // First try to get data from server session
+      const response = await fetch('/get_user_data');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user.name) {
+          const userName = data.user.name;
+          
+          // Populate all name fields
+          const nameUpload = document.getElementById('nameUpload');
+          const nameQuestion = document.getElementById('nameQuestion');
+          const signupModalName = document.getElementById('signupModalName');
+          
+          if (nameUpload && !nameUpload.value) {
+            nameUpload.value = userName;
+          }
+          if (nameQuestion && !nameQuestion.value) {
+            nameQuestion.value = userName;
+          }
+          if (signupModalName && !signupModalName.value) {
+            signupModalName.value = userName;
+          }
+          return; // Successfully populated from server
+        }
+      }
+    } catch (error) {
+      console.log('Could not fetch user data from server, trying DOM fallback');
+    }
+    
+    // Fallback: Check if user is logged in via DOM elements
+    const userInfoElement = document.querySelector('.user-name');
+    if (userInfoElement && userInfoElement.textContent !== 'Valued User') {
+      const userName = userInfoElement.textContent.trim();
+      
+      // Populate all name fields
+      const nameUpload = document.getElementById('nameUpload');
+      const nameQuestion = document.getElementById('nameQuestion');
+      const signupModalName = document.getElementById('signupModalName');
+      
+      if (nameUpload && !nameUpload.value) {
+        nameUpload.value = userName;
+      }
+      if (nameQuestion && !nameQuestion.value) {
+        nameQuestion.value = userName;
+      }
+      if (signupModalName && !signupModalName.value) {
+        signupModalName.value = userName;
+      }
+    }
+  }
+
+  function closeSignUpModal() {
+    document.getElementById('signupModal').style.display = 'none';
+    
+    // Reset to step 1
+    document.getElementById('signupStep1').style.display = 'block';
+    document.getElementById('signupOtpContainer').style.display = 'none';
+    
+    // Clear all inputs and messages
+    document.getElementById('signupAuthMessage').textContent = '';
+    document.getElementById('signupAuthMessage').className = '';
+    document.getElementById('signupModalName').value = '';
+    document.getElementById('signupModalPhone').value = '';
+    document.getElementById('signupModalOtp').value = '';
+    document.getElementById('signupRememberMe').checked = true;
+    
+    // Reset button states
+    const getOtpBtn = document.getElementById('getOtpBtn');
+    const otpBtnText = document.getElementById('otpBtnText');
+    const otpBtnSpinner = document.getElementById('otpBtnSpinner');
+    if (getOtpBtn) {
+      getOtpBtn.disabled = false;
+      otpBtnText.style.display = 'inline';
+      otpBtnSpinner.style.display = 'none';
+    }
+    
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const verifyBtnText = document.getElementById('verifyBtnText');
+    const verifyBtnSpinner = document.getElementById('verifyBtnSpinner');
+    if (verifyOtpBtn) {
+      verifyOtpBtn.disabled = false;
+      verifyBtnText.style.display = 'inline';
+      verifyBtnSpinner.style.display = 'none';
+    }
+  }
+
+  function loadSavedAccounts() {
+    const savedAccountsList = document.getElementById('savedAccountsList');
+    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+    
+    savedAccountsList.innerHTML = '';
+    
+    if (accounts.length === 0) {
+      savedAccountsList.innerHTML = '<div class="no-accounts">No saved accounts. Please sign up first.</div>';
+      return;
+    }
+    
+    accounts.forEach(account => {
+      const accountDiv = document.createElement('div');
+      accountDiv.className = 'saved-account';
+      accountDiv.innerHTML = `
+        <div class="account-name">${account.name}</div>
+        <div class="account-phone">${account.phone}</div>
+        <button class="remove-account" onclick="removeAccount('${account.phone}')">Remove</button>
+      `;
+      accountDiv.onclick = () => loginExisting(account.phone);
+      savedAccountsList.appendChild(accountDiv);
+    });
+  }
+
+  function removeAccount(phone) {
+    let accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+    accounts = accounts.filter(account => account.phone !== phone);
+    localStorage.setItem('accounts', JSON.stringify(accounts));
+    loadSavedAccounts();
+  }
+
+  function loginExisting(phone) {
+    fetch('/login_existing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        document.getElementById('loginAuthMessage').textContent = data.error;
+        document.getElementById('loginAuthMessage').className = 'auth-message error';
+      } else {
+        document.getElementById('loginAuthMessage').textContent = 'Login successful! Redirecting...';
+        document.getElementById('loginAuthMessage').className = 'auth-message success';
+        setTimeout(() => {
+          closeLoginModal();
+          window.location.reload();
+        }, 1000);
+      }
+    })
+    .catch(error => {
+      document.getElementById('loginAuthMessage').textContent = `Error: ${error.message}`;
+      document.getElementById('loginAuthMessage').className = 'auth-message error';
+    });
+  }
+
+  function saveAccountLocal(name, phone) {
+    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+    if (!accounts.some(account => account.phone === phone)) {
+      accounts.push({ name, phone });
+      localStorage.setItem('accounts', JSON.stringify(accounts));
+    }
+  }
+
+
+
+// Firebase OTP configuration and functions
+let firebaseRecaptchaVerifier;
+let firebaseConfirmationResult;
+
+// Initialize Firebase RecaptchaVerifier for invisible reCAPTCHA
+function initRecaptchaVerifier() {
+  if (!firebaseRecaptchaVerifier) {
+    firebaseRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'invisible',
+      'callback': (response) => {
+        console.log('reCAPTCHA solved');
+      },
+      'expired-callback': () => {
+        console.log('reCAPTCHA expired');
+        firebaseRecaptchaVerifier = null;
+      }
+    });
+  }
+  return firebaseRecaptchaVerifier;
+}
+
+// Send Firebase Phone OTP with Name Confirmation
+async function sendFirebaseOtp() {
+  const nameInput = document.getElementById('signupModalName');
+  const phoneInput = document.getElementById('signupModalPhone');
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const authMessage = document.getElementById('signupAuthMessage');
+  
+  // Clear previous messages
+  authMessage.textContent = '';
+  authMessage.className = '';
+  
+  // Validate inputs
+  if (!name) {
+    authMessage.textContent = 'Please enter your full name';
+    authMessage.className = 'auth-message error';
+    nameInput.focus();
+    return;
+  }
+  
+  if (!phone) {
+    authMessage.textContent = 'Please enter your phone number';
+    authMessage.className = 'auth-message error';
+    phoneInput.focus();
+    return;
+  }
+  
+  // Validate phone number format (Indian mobile)
+  const phoneRegex = /^[6-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    authMessage.textContent = 'Please enter a valid 10-digit Indian mobile number';
+    authMessage.className = 'auth-message error';
+    phoneInput.focus();
+    return;
+  }
+  
+  // Show name confirmation modal before proceeding
+  showNameConfirmationModal(name, phone);
+}
+
+// Name Confirmation Modal Functions
+function showNameConfirmationModal(name, phone) {
+  // Store the data for later use
+  window.pendingSignupData = { name, phone };
+  
+  // Update modal content
+  document.getElementById('confirmNameDisplay').textContent = name;
+  document.getElementById('namePreview').textContent = name.replace(/\s+/g, '');
+  
+  // Hide signup modal and show confirmation modal
+  document.getElementById('signupModal').style.display = 'none';
+  document.getElementById('nameConfirmationModal').style.display = 'block';
+}
+
+function closeNameConfirmationModal() {
+  document.getElementById('nameConfirmationModal').style.display = 'none';
+  // Show signup modal again
+  document.getElementById('signupModal').style.display = 'block';
+}
+
+function confirmNameAndProceed() {
+  // Close confirmation modal
+  document.getElementById('nameConfirmationModal').style.display = 'none';
+  
+  // Show signup modal again
+  document.getElementById('signupModal').style.display = 'block';
+  
+  // Proceed with OTP sending
+  proceedWithFirebaseOtp();
+}
+
+function editNameAndReturn() {
+  // Close confirmation modal and return to signup form
+  closeNameConfirmationModal();
+  
+  // Focus on name input for editing
+  setTimeout(() => {
+    document.getElementById('signupModalName').focus();
+  }, 300);
+}
+
+// Proceed with Firebase OTP after name confirmation
+async function proceedWithFirebaseOtp() {
+  const { name, phone } = window.pendingSignupData;
+  const authMessage = document.getElementById('signupAuthMessage');
+  const getOtpBtn = document.getElementById('getOtpBtn');
+  const otpBtnText = document.getElementById('otpBtnText');
+  const otpBtnSpinner = document.getElementById('otpBtnSpinner');
+  
+  // Show loading state
+  getOtpBtn.disabled = true;
+  otpBtnText.style.display = 'none';
+  otpBtnSpinner.style.display = 'inline';
+  
+  try {
+    // Initialize RecaptchaVerifier
+    const appVerifier = initRecaptchaVerifier();
+    
+    // Format phone number for Firebase (add +91 for India)
+    const formattedPhone = `+91${phone}`;
+    
+    // Store user data for later use
+    window.signupUserData = { name, phone };
+    
+    // Send verification code using Firebase
+    firebaseConfirmationResult = await firebase.auth().signInWithPhoneNumber(formattedPhone, appVerifier);
+    
+    console.log('Firebase OTP sent successfully');
+    
+    // Hide step 1, show step 2
+    document.getElementById('signupStep1').style.display = 'none';
+    document.getElementById('signupOtpContainer').style.display = 'block';
+    
+    authMessage.textContent = 'SMS sent successfully! Please check your phone.';
+    authMessage.className = 'auth-message success';
+    
+    // Focus on OTP input
+    setTimeout(() => {
+      document.getElementById('signupModalOtp').focus();
+    }, 500);
+    
+  } catch (error) {
+    console.error('Firebase OTP error:', error);
+    
+    let errorMessage = 'Failed to send SMS OTP. ';
+    
+    // Handle specific Firebase errors
+    if (error.code === 'auth/too-many-requests') {
+      errorMessage += 'Too many attempts. Please try again later.';
+    } else if (error.code === 'auth/invalid-phone-number') {
+      errorMessage += 'Invalid phone number format.';
+    } else if (error.code === 'auth/quota-exceeded') {
+      errorMessage += 'SMS quota exceeded. Please try again later.';
+    } else {
+      errorMessage += error.message || 'Please try again.';
+    }
+    
+    authMessage.textContent = errorMessage;
+    authMessage.className = 'auth-message error';
+  } finally {
+    // Reset button state
+    getOtpBtn.disabled = false;
+    otpBtnText.style.display = 'inline';
+    otpBtnSpinner.style.display = 'none';
+  }
+}
+
+// Verify Firebase Phone OTP
+async function verifyFirebaseOtp() {
+  const otpInput = document.getElementById('signupModalOtp');
+  const rememberMeInput = document.getElementById('signupRememberMe');
+  const otp = otpInput.value.trim();
+  const rememberMe = rememberMeInput.checked;
+  const authMessage = document.getElementById('signupAuthMessage');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const verifyBtnText = document.getElementById('verifyBtnText');
+  const verifyBtnSpinner = document.getElementById('verifyBtnSpinner');
+  
+  // Clear previous messages
+  authMessage.textContent = '';
+  authMessage.className = '';
+  
+  if (!otp) {
+    authMessage.textContent = 'Please enter the 6-digit OTP';
+    authMessage.className = 'auth-message error';
+    otpInput.focus();
+    return;
+  }
+  
+  // Validate OTP format (6 digits for Firebase)
+  if (!/^\d{6}$/.test(otp)) {
+    authMessage.textContent = 'Please enter a valid 6-digit OTP';
+    authMessage.className = 'auth-message error';
+    otpInput.focus();
+    return;
+  }
+  
+  if (!firebaseConfirmationResult) {
+    authMessage.textContent = 'Please request OTP first';
+    authMessage.className = 'auth-message error';
+    return;
+  }
+  
+  // Show loading state
+  verifyOtpBtn.disabled = true;
+  verifyBtnText.style.display = 'none';
+  verifyBtnSpinner.style.display = 'inline';
+  
+  try {
+    // Verify the OTP with Firebase
+    const result = await firebaseConfirmationResult.confirm(otp);
+    const user = result.user;
+    
+    console.log('Firebase OTP verified successfully:', user);
+    
+    // Get the Firebase ID token
+    const idToken = await user.getIdToken();
+    
+    // Send the Firebase ID token to your backend for session creation
+    const response = await fetch('/verify_firebase_otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        firebase_id_token: idToken,
+        name: window.signupUserData?.name || '',
+        phone: window.signupUserData?.phone || '',
+        remember_me: rememberMe
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Backend verification failed');
+    }
+    
+    const data = await response.json();
+    
+    // Save account locally if remember me is checked
+    if (rememberMe && window.signupUserData) {
+      saveAccountLocal(window.signupUserData.name, window.signupUserData.phone);
+    }
+    
+    authMessage.textContent = 'Firebase OTP verified successfully! Welcome aboard! ✨';
+    authMessage.className = 'auth-message success';
+    
+    setTimeout(() => {
+      closeSignUpModal();
+      window.location.reload();
+    }, 1500);
+    
+  } catch (error) {
+    console.error('Firebase OTP verification error:', error);
+    
+    let errorMessage = 'OTP verification failed. ';
+    
+    // Handle specific Firebase errors
+    if (error.code === 'auth/invalid-verification-code') {
+      errorMessage += 'Invalid OTP code. Please check and try again.';
+    } else if (error.code === 'auth/code-expired') {
+      errorMessage += 'OTP has expired. Please request a new one.';
+    } else {
+      errorMessage += error.message || 'Please try again.';
+    }
+    
+    authMessage.textContent = errorMessage;
+    authMessage.className = 'auth-message error';
+    otpInput.focus();
+  } finally {
+    // Reset button state
+    verifyOtpBtn.disabled = false;
+    verifyBtnText.style.display = 'inline';
+    verifyBtnSpinner.style.display = 'none';
+  }
+}
+
+// Resend Firebase OTP
+async function resendFirebaseOtp() {
+  const resendBtn = document.getElementById('resendOtpBtn');
+  const authMessage = document.getElementById('signupAuthMessage');
+  
+  resendBtn.disabled = true;
+  resendBtn.textContent = '🔄 Sending...';
+  
+  try {
+    // Clear previous OTP input
+    document.getElementById('signupModalOtp').value = '';
+    
+    // Reset Firebase verification state
+    firebaseConfirmationResult = null;
+    
+    // Reinitialize RecaptchaVerifier
+    if (firebaseRecaptchaVerifier) {
+      firebaseRecaptchaVerifier.clear();
+      firebaseRecaptchaVerifier = null;
+    }
+    
+    // Get stored user data
+    const userData = window.signupUserData;
+    if (!userData) {
+      throw new Error('User data not found. Please start over.');
+    }
+    
+    // Initialize new RecaptchaVerifier
+    const appVerifier = initRecaptchaVerifier();
+    
+    // Format phone number for Firebase
+    const formattedPhone = `+91${userData.phone}`;
+    
+    // Send new verification code
+    firebaseConfirmationResult = await firebase.auth().signInWithPhoneNumber(formattedPhone, appVerifier);
+    
+    authMessage.textContent = 'New SMS sent successfully! Please check your phone.';
+    authMessage.className = 'auth-message success';
+    
+  } catch (error) {
+    console.error('Firebase OTP resend error:', error);
+    
+    let errorMessage = 'Failed to resend SMS OTP. ';
+    
+    if (error.code === 'auth/too-many-requests') {
+      errorMessage += 'Too many attempts. Please try again later.';
+    } else {
+      errorMessage += error.message || 'Please try again.';
+    }
+    
+    authMessage.textContent = errorMessage;
+    authMessage.className = 'auth-message error';
+  } finally {
+    resendBtn.disabled = false;
+    resendBtn.textContent = '🔄 Resend SMS';
+  }
+}
+
+  // Function to refresh credit display
+  async function refreshCreditDisplay() {
+    try {
+      const response = await fetch('/refresh_user_session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Credit refresh response:', data);
+        
+        if (data.user) {
+          const creditsDisplay = document.querySelector('.credits-display span:last-child');
+          if (creditsDisplay) {
+            creditsDisplay.textContent = `${data.user.credits || 0} Credits`;
+          }
+          
+          // Also update the credits balance in the main section
+          const creditsBalance = document.querySelector('.credits-balance');
+          if (creditsBalance) {
+            creditsBalance.innerHTML = `💎 ${data.user.credits || 0}`;
+          }
+          
+          // Log credit changes for debugging
+          if (data.credit_change && data.credit_change.changed) {
+            console.log(`Credits updated: ${data.credit_change.old_credits} -> ${data.credit_change.new_credits}`);
+          }
+        }
+      } else {
+        console.error('Failed to refresh credits:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error refreshing credit display:', error);
+    }
+  }
+
+  // CHRIST Template Modal Functions
+  function openChristTemplateModal() {
+    // Auto-populate name and register number from the form fields
+    const uploadName = document.getElementById('nameUpload').value.trim();
+    const uploadRegNo = document.getElementById('regNoUpload').value.trim();
+    const questionName = document.getElementById('nameQuestion').value.trim();
+    const questionRegNo = document.getElementById('regNoQuestion').value.trim();
+    
+    // Get existing values if they were previously set
+    const existingData = window.christTemplateData || {};
+    
+    // Populate all fields with either existing data or form values
+    document.getElementById('christName').value = existingData.name || uploadName || questionName;
+    document.getElementById('christRegNo').value = existingData.reg_number || uploadRegNo || questionRegNo;
+    document.getElementById('christCourse').value = existingData.course || '';
+    document.getElementById('christClass').value = existingData.class_section || '';
+    document.getElementById('christPractical').value = existingData.practical_number || '';
+    document.getElementById('christTeacher').value = existingData.teacher_name || '';
+    
+    // Show the modal
+    document.getElementById('christTemplateModal').style.display = 'flex';
+  }
+  
+  function closeChristTemplateModal() {
+    // Reset template selection to "none" if user cancels
+    document.getElementById('templateUpload').value = 'none';
+    
+    // Hide the modal
+    document.getElementById('christTemplateModal').style.display = 'none';
+    
+    // Clear all form fields
+    document.getElementById('christName').value = '';
+    document.getElementById('christRegNo').value = '';
+    document.getElementById('christCourse').value = '';
+    document.getElementById('christClass').value = '';
+    document.getElementById('christPractical').value = '';
+    document.getElementById('christTeacher').value = '';
+  }
+  
+  function applyChristTemplate() {
+    // Get all form values
+    const christData = {
+      name: document.getElementById('christName').value.trim(),
+      reg_number: document.getElementById('christRegNo').value.trim(),
+      course: document.getElementById('christCourse').value.trim(),
+      class_section: document.getElementById('christClass').value.trim(),
+      practical_number: document.getElementById('christPractical').value.trim(),
+      teacher_name: document.getElementById('christTeacher').value.trim()
+    };
+    
+    // Validate required fields
+    const requiredFields = ['course', 'class_section', 'practical_number', 'teacher_name'];
+    const missingFields = requiredFields.filter(field => !christData[field]);
+    
+    if (missingFields.length > 0) {
+      alert('Please fill in all required fields:\n• ' + missingFields.map(field => {
+        switch(field) {
+          case 'class_section': return 'Class/Section';
+          case 'practical_number': return 'Practical Number';
+          case 'teacher_name': return 'Teacher Name';
+          default: return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+        }
+      }).join('\n• '));
+      return;
+    }
+    
+    // Store CHRIST template data globally for form submission
+    window.christTemplateData = christData;
+    
+    // Close the modal
+    document.getElementById('christTemplateModal').style.display = 'none';
+    
+    // Show confirmation message
+    const templateSelect = document.getElementById('templateUpload');
+    templateSelect.style.background = 'rgba(78, 205, 196, 0.2)';
+    templateSelect.style.borderColor = '#4ecdc4';
+    
+    // Show a brief confirmation
+    showTemporaryMessage('✅ CHRIST University template configured successfully!', 'success');
+  }
+  
+  // Helper function to show temporary messages
+  function showTemporaryMessage(message, type = 'info') {
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      z-index: 10001;
+      animation: slideInRight 0.5s ease;
+    `;
+    
+    if (type === 'success') {
+      messageDiv.style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+    } else if (type === 'error') {
+      messageDiv.style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a6f)';
+    } else {
+      messageDiv.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+    }
+    
+    messageDiv.textContent = message;
+    document.body.appendChild(messageDiv);
+    
+    // Remove message after 3 seconds
+    setTimeout(() => {
+      messageDiv.style.animation = 'slideOutRight 0.5s ease';
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          document.body.removeChild(messageDiv);
+        }
+      }, 500);
+    }, 3000);
+  }
+  
+  // Add CSS animations for temporary messages
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Load saved accounts when page loads
+  window.addEventListener('DOMContentLoaded', () => {
+    loadSavedAccounts();
+    
+    // Auto-populate name fields from session
+    populateNameFromSession();
+    
+    // Auto-refresh credits display when page loads
+    setTimeout(() => {
+      refreshCreditDisplay();
+    }, 1000); // Wait 1 second for page to fully load
+    
+    // Check if we're coming from a payment success page
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment_success') === 'true') {
+      // Refresh credits multiple times to ensure they're updated
+      setTimeout(() => refreshCreditDisplay(), 2000);
+      setTimeout(() => refreshCreditDisplay(), 4000);
+      
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  });
+
+  // ======= CASHFREE PAYMENT INTEGRATION =======
+  
+  // Debug function to test if JavaScript is working
+  async function checkUserAuth() {
+    try {
+      const response = await fetch('/check_auth');
+      const data = await response.json();
+      return data.authenticated ? data.user : null;
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      return null;
+    }
+  }
+  
+  // Payment success handler for return from Cashfree
+  function handlePaymentReturn() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+    const status = urlParams.get('status');
+    
+    if (orderId && status === 'success') {
+      alert('Payment successful! Your credits have been added to your account.');
+      // Refresh user data
+      location.reload();
+    }
+  }
+  
+  // Check for payment return on page load
+  document.addEventListener('DOMContentLoaded', handlePaymentReturn);
+  
+  // Customization Modal Functions
+  function openCustomizationModal() {
+    document.getElementById('customizationModal').style.display = 'flex';
+    // Set up event listeners for live preview
+    setupLivePreviewListeners();
+    // Update preview with current values
+    updateLivePreview();
+  }
+  
+  function closeCustomizationModal() {
+    document.getElementById('customizationModal').style.display = 'none';
+  }
+  
+  function resetCustomization() {
+    // Reset heading controls
+    document.getElementById('headingFontStyle').value = 'Calibri';
+    document.getElementById('headingSize').value = '14';
+    document.getElementById('headingColor').value = '#000000';
+    document.getElementById('headingStyle').value = 'bold';
+    
+    // Reset question controls
+    document.getElementById('questionFontStyle').value = 'Calibri';
+    document.getElementById('questionSize').value = '11';
+    document.getElementById('questionColor').value = '#000000';
+    document.getElementById('questionBold').checked = false;
+    document.getElementById('questionItalic').checked = false;
+    document.getElementById('questionUnderline').checked = false;
+    
+    // Reset code controls
+    document.getElementById('codeFontStyle').value = 'Consolas';
+    document.getElementById('codeSize').value = '10';
+    document.getElementById('codeColor').value = '#000000';
+    
+    // Reset global controls
+    document.getElementById('lineSpacing').value = '1.15';
+    document.getElementById('textAlignment').value = 'left';
+    
+    // Update live preview after reset
+    updateLivePreview();
+  }
+  
+  function applyCustomization() {
+    // Collect all customization settings
+    const customization = {
+      // Heading settings
+      headingFontStyle: document.getElementById('headingFontStyle').value,
+      headingSize: parseInt(document.getElementById('headingSize').value),
+      headingColor: document.getElementById('headingColor').value,
+      headingStyle: document.getElementById('headingStyle').value,
+      
+      // Question text settings
+      questionFontStyle: document.getElementById('questionFontStyle').value,
+      questionSize: parseInt(document.getElementById('questionSize').value),
+      questionColor: document.getElementById('questionColor').value,
+      questionBold: document.getElementById('questionBold').checked,
+      questionItalic: document.getElementById('questionItalic').checked,
+      questionUnderline: document.getElementById('questionUnderline').checked,
+      
+      // Code settings
+      codeFontStyle: document.getElementById('codeFontStyle').value,
+      codeSize: parseInt(document.getElementById('codeSize').value),
+      codeColor: document.getElementById('codeColor').value,
+      
+      // Global settings
+      lineSpacing: parseFloat(document.getElementById('lineSpacing').value),
+      textAlignment: document.getElementById('textAlignment').value
+    };
+    
+    // Store customization data globally for form submission
+    window.customizationSettings = customization;
+    
+    // Close modal
+    closeCustomizationModal();
+    
+    // Show confirmation message
+    const messageBox = document.getElementById('uploadMessage');
+    if (messageBox) {
+      showMessage('uploadMessage', '✨ Customization settings applied! Your document will use these styles.', 'green');
+    }
+    
+    console.log('Customization settings applied:', customization);
+  }
+  
+  // Live preview update function with real-time updates
+  function updateLivePreview() {
+    const previewContainer = document.getElementById('previewContainer');
+    const previewHeader = document.getElementById('previewHeader');
+    const previewContent = document.getElementById('previewContent');
+    const previewCode = document.getElementById('previewCode');
+    
+    if (!previewContainer) return;
+    
+    // Get heading settings
+    const headingFontStyle = document.getElementById('headingFontStyle')?.value || 'Calibri';
+    const headingSize = document.getElementById('headingSize')?.value || '14';
+    const headingColor = document.getElementById('headingColor')?.value || '#000000';
+    const headingStyle = document.getElementById('headingStyle')?.value || 'bold';
+    
+    // Get question text settings  
+    const questionFontStyle = document.getElementById('questionFontStyle')?.value || 'Calibri';
+    const questionSize = document.getElementById('questionSize')?.value || '11';
+    const questionColor = document.getElementById('questionColor')?.value || '#000000';
+    const questionBold = document.getElementById('questionBold')?.checked || false;
+    const questionItalic = document.getElementById('questionItalic')?.checked || false;
+    const questionUnderline = document.getElementById('questionUnderline')?.checked || false;
+    
+    // Get code settings
+    const codeFontStyle = document.getElementById('codeFontStyle')?.value || 'Consolas';
+    const codeSize = document.getElementById('codeSize')?.value || '10';
+    const codeColor = document.getElementById('codeColor')?.value || '#000000';
+    
+    // Get global settings
+    const lineSpacing = document.getElementById('lineSpacing')?.value || '1.15';
+    const textAlignment = document.getElementById('textAlignment')?.value || 'left';
+    
+    // Apply heading styles to the question header
+    if (previewHeader) {
+      previewHeader.style.fontFamily = headingFontStyle;
+      previewHeader.style.fontSize = headingSize + 'pt';
+      previewHeader.style.color = headingColor;
+      previewHeader.style.textAlign = textAlignment;
+      previewHeader.style.lineHeight = lineSpacing;
+      
+      // Parse heading style (e.g., "bold", "italic", "bold_italic", "bold_underline")
+      let headingWeight = 'normal';
+      let headingStyleValue = 'normal';
+      let headingDecoration = 'none';
+      
+      if (headingStyle.includes('bold')) {
+        headingWeight = 'bold';
+      }
+      if (headingStyle.includes('italic')) {
+        headingStyleValue = 'italic';
+      }
+      if (headingStyle.includes('underline')) {
+        headingDecoration = 'underline';
+      }
+      
+      previewHeader.style.fontWeight = headingWeight;
+      previewHeader.style.fontStyle = headingStyleValue;
+      previewHeader.style.textDecoration = headingDecoration;
+    }
+    
+    // Apply question text styles to the main content
+    if (previewContent) {
+      const paragraphs = previewContent.querySelectorAll('p');
+      paragraphs.forEach(p => {
+        p.style.fontFamily = questionFontStyle;
+        p.style.fontSize = questionSize + 'pt';
+        p.style.color = questionColor;
+        p.style.lineHeight = lineSpacing;
+        p.style.textAlign = textAlignment;
+        
+        // Apply question text formatting
+        p.style.fontWeight = questionBold ? 'bold' : 'normal';
+        p.style.fontStyle = questionItalic ? 'italic' : 'normal';
+        p.style.textDecoration = questionUnderline ? 'underline' : 'none';
+      });
+    }
+    
+    // Apply code styles to the code block
+    if (previewCode) {
+      previewCode.style.fontFamily = codeFontStyle;
+      previewCode.style.fontSize = codeSize + 'pt';
+      previewCode.style.color = codeColor;
+      previewCode.style.lineHeight = lineSpacing;
+      previewCode.style.textAlign = textAlignment;
+      previewCode.style.backgroundColor = '#f8f9fa';
+      previewCode.style.padding = '10px';
+      previewCode.style.borderRadius = '4px';
+      previewCode.style.border = '1px solid #e9ecef';
+      previewCode.style.display = 'block';
+      previewCode.style.whiteSpace = 'pre';
+    }
+  }
+  
+  // Initialize live preview when modal opens
+  function openCustomizationModal() {
+    document.getElementById('customizationModal').style.display = 'flex';
+    
+    // Set up event listeners for live preview
+    setupLivePreviewListeners();
+    
+    // Update preview with current values
+    updateLivePreview();
+  }
+  
+  function setupLivePreviewListeners() {
+    // All customization control IDs for real-time updates
+    const inputs = [
+      'headingFontStyle', 'headingSize', 'headingColor', 'headingStyle',
+      'questionFontStyle', 'questionSize', 'questionColor', 'questionBold', 'questionItalic', 'questionUnderline',
+      'codeFontStyle', 'codeSize', 'codeColor',
+      'lineSpacing', 'textAlignment'
+    ];
+    
+    inputs.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        // Remove existing event listener by cloning the element
+        const newElement = element.cloneNode(true);
+        element.parentNode.replaceChild(newElement, element);
+        
+        // Add real-time event listeners
+        newElement.addEventListener('change', updateLivePreview);
+        newElement.addEventListener('input', updateLivePreview);
+        
+        // For color inputs, also listen to 'input' for real-time color changes
+        if (id.includes('Color')) {
+          newElement.addEventListener('input', function() {
+            // Small delay for smoother color transitions
+            setTimeout(updateLivePreview, 50);
+          });
+        }
+        
+        // For checkboxes, listen to 'click' for immediate updates
+        if (element.type === 'checkbox') {
+          newElement.addEventListener('click', updateLivePreview);
+        }
+      }
+    });
+  }
+  
+  // Close customization modal when clicking outside
+  window.addEventListener('click', function(event) {
+    const customizationModal = document.getElementById('customizationModal');
+    if (event.target === customizationModal) {
+      closeCustomizationModal();
+    }
+  });
+
+  // Custom Question Limit Modal Functions
+  function showQuestionLimitModal(checkData) {
+    const modal = document.getElementById('questionLimitModal');
+    
+    // Update modal content with data
+    document.getElementById('questionCount').textContent = checkData.question_count;
+    document.getElementById('totalQuestions').textContent = checkData.question_count;
+    document.getElementById('extraQuestions').textContent = checkData.extra_questions;
+    document.getElementById('totalCredits').textContent = checkData.total_credits_required;
+    document.getElementById('userCredits').textContent = checkData.user_credits;
+    
+    // Update encouragement text based on credit availability
+    const encouragementText = document.querySelector('.encouragement-text');
+    if (checkData.has_sufficient_credits) {
+      encouragementText.innerHTML = '✨ You have plenty of credits! Let\'s solve all your questions efficiently.';
+      encouragementText.style.color = '#28a745';
+    } else {
+      encouragementText.innerHTML = '⚠️ You need more credits to process all questions. Consider purchasing more credits.';
+      encouragementText.style.color = '#dc3545';
+      
+      // Change button text if insufficient credits
+      document.querySelector('.btn-continue span').textContent = '💳 Get More Credits';
+    }
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Add click outside to close
+    modal.onclick = function(event) {
+      if (event.target === modal) {
+        cancelQuestionLimit();
+      }
+    };
+  }
+  
+  function confirmQuestionLimit() {
+    const modal = document.getElementById('questionLimitModal');
+    modal.style.display = 'none';
+    
+    // Check if user has sufficient credits
+    const userCredits = parseInt(document.getElementById('userCredits').textContent);
+    const totalCredits = parseInt(document.getElementById('totalCredits').textContent);
+    
+    if (userCredits < totalCredits) {
+      // Redirect to pricing section
+      document.getElementById('pricingSection')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    
+    // Continue with processing
+    if (window.pendingFormData) {
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      const progressText = document.getElementById("uploadProgressText");
+      
+      progressContainer.style.display = "block";
+      progressText.textContent = "Solving, wait karo...";
+      
+      // Add confirmation flag
+      window.pendingFormData.append('confirmed', 'true');
+      
+      // Continue with upload
+      continueUpload(window.pendingFormData, window.pendingStartTime);
+    }
+  }
+  
+  function cancelQuestionLimit() {
+    const modal = document.getElementById('questionLimitModal');
+    modal.style.display = 'none';
+    
+    // Clean up pending data
+    window.pendingFormData = null;
+    window.pendingStartTime = null;
+  }
+  
+  async function continueUpload(formData, startTime) {
+    try {
+      // Create AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes timeout
+      
+      const response = await fetch('/upload_pdf', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+        headers: {
+          'Connection': 'keep-alive'
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Solved_Assignment.docx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        progressContainer.style.display = "none";
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+        showMessage('uploadMessage', `File processed ✅ (${elapsed} seconds)`, "black");
+        refreshCreditDisplay();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error processing file.');
+      }
+    } catch (error) {
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      progressContainer.style.display = "none";
+      
+      // Handle specific error types
+      if (error.name === 'AbortError') {
+        showMessage('uploadMessage', 'Upload timeout. Please try again with a smaller file.', "red");
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_RESET')) {
+        showMessage('uploadMessage', 'Connection lost. Please check your internet and try again.', "red");
+      } else {
+        showMessage('uploadMessage', error.message, "red");
+      }
+      
+      console.error('Upload error:', error);
+    }
+  }
+  
+  </script>
+  <script src="{{ url_for('static', filename='js/pricing.js') }}"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+          onerror="console.error('Failed to load Socket.IO from CDN, trying fallback...'); loadSocketIOFallback();"></script>
+  <script>
+  // Enhanced Socket.IO initialization with fallback and retry logic
+  let socket = null;
+  let socketInitialized = false;
+
+  function loadSocketIOFallback() {
+    if (window.__socketioLoading) return;
+    window.__socketioLoading = true;
+
+    const sources = [
+      'https://cdn.socket.io/4.7.5/socket.io.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js',
+      'https://cdn.jsdelivr.net/npm/socket.io@4.7.5/dist/socket.io.min.js',
+      '/socket.io/socket.io.js'
+    ];
+
+    let idx = 0;
+    function tryNext() {
+      if (idx >= sources.length) {
+        console.warn('⚠️ Socket.IO fallback failed. Disabling realtime updates gracefully.');
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = sources[idx++];
+      s.async = true;
+      s.onload = () => { console.log('✅ Socket.IO loaded via fallback:', s.src); initializeSocketIO(); };
+      s.onerror = () => { console.warn('⚠️ Failed to load:', s.src); tryNext(); };
+      document.head.appendChild(s);
+    }
+    tryNext();
+  }
+  
+  function initializeSocketIO() {
+    try {
+      if (typeof io === 'function' && !socketInitialized) {
+        socket = io({
+          transports: ['websocket', 'polling'],
+          timeout: 20000,
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionAttempts: 5,
+          maxReconnectionAttempts: 10
+        });
+        
+        socket.on('connect', () => {
+          console.log('✅ Socket.IO connected successfully');
+          socketInitialized = true;
+        });
+        
+        socket.on('disconnect', (reason) => {
+          console.log('❌ Socket.IO disconnected:', reason);
+          socketInitialized = false;
+        });
+        
+        socket.on('connect_error', (error) => {
+          console.error('🔴 Socket.IO connection error:', error);
+        });
+        
+        return true;
+      } else if (typeof io === 'undefined') {
+        console.warn('⚠️ Socket.IO library not loaded - trying fallback');
+        loadSocketIOFallback();
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Socket.IO initialization failed:', error);
+      return false;
+    }
+  }
+  
+  // Initialize immediately and retry if needed
+  if (!initializeSocketIO()) {
+    // Retry after a short delay
+    setTimeout(() => {
+      if (!socketInitialized) {
+        console.log('🔄 Retrying Socket.IO initialization...');
+        initializeSocketIO();
+      }
+    }, 2000);
+  }
+
+  // Monitor task progress with enhanced error handling
+  function watchTaskProgress(taskId) {
+      // Enhanced socket check with initialization retry
+      if (!socket || !socketInitialized) {
+          console.warn('⚠️ Socket not ready, attempting to initialize...');
+          if (initializeSocketIO()) {
+            // Wait a moment for connection to establish
+            setTimeout(() => watchTaskProgress(taskId), 1000);
+            return;
+          } else {
+            console.warn('❌ Socket initialization failed - progress tracking disabled for task:', taskId);
+            return;
+          }
+      }
+
+      try {
+        // Join task room
+        socket.emit('join_task', { task_id: taskId });
+        console.log('📡 Joined task room:', taskId);
+        
+        // Add processing animation
+        const progressContainer = document.getElementById("uploadProgressContainer");
+        if (progressContainer) {
+          progressContainer.classList.add('processing');
+        }
+
+        // Handle task updates with error handling
+        socket.off('task_update'); // Remove previous listeners
+        socket.on('task_update', function (data) {
+          if (data.task_id === taskId) {
+              const task = data.data;
+              console.log(`Task ${taskId} update`, task);
+              
+              updateProgressUI(task);
+          }
+        });
+
+        // Handle task completion
+        socket.on('task_completed', function (data) {
+            if (data.task_id === taskId) {
+                console.log(`Task ${taskId} completed!`);
+                handleTaskCompletion(taskId, data.result);
+            }
+        });
+
+        // Handle task failures
+        socket.on('task_failed', function (data) {
+            if (data.task_id === taskId) {
+                console.error(`Task ${taskId} failed: ${data.error}`);
+                handleTaskFailure(taskId, data.error);
+            }
+        });
+      } catch (error) {
+        console.error('❌ Error in watchTaskProgress:', error);
+        // Fallback: hide progress container and show error
+        const progressContainer = document.getElementById("uploadProgressContainer");
+        if (progressContainer) {
+          progressContainer.style.display = "none";
+        }
+        showMessage('uploadMessage', 'Error tracking task progress. Please try again.', "black");
+      }
+  }
+  
+  // Enhanced updateProgressUI function that handles both old and new data formats
+  function updateProgressUI(data) {
+    // Handle both old format (progressData) and new format (task)
+    const progressData = data.progress !== undefined ? data : {
+      progress: data.progress || 0,
+      stage_name: data.stage_details || data.current_stage || 'Processing...',
+      estimated_total_time: data.estimated_completion?.message || 'Calculating...',
+      elapsed_time: 0,
+      questions_total: data.questions_total || 0,
+      questions_completed: data.questions_completed || 0,
+      total_time: data.total_time || null,
+      download_ready: data.download_ready || false
+    };
+
+    const {
+      progress = 0,
+      stage_name = 'Processing...',
+      estimated_total_time = 'Calculating...',
+      elapsed_time = 0,
+      questions_total = 0,
+      questions_completed = 0,
+      total_time = null,
+      download_ready = false
+    } = progressData;
+    
+    // Update progress bar
+    const progressFill = document.getElementById('uploadProgressFill') || document.getElementById('manualProgressFill');
+    const progressPercentage = document.getElementById('uploadProgressPercentage') || document.getElementById('manualProgressPercentage');
+    const progressText = document.getElementById('uploadProgressText') || document.getElementById('manualProgressText');
+    const estimatedTimeEl = document.getElementById('uploadEstimatedTime') || document.getElementById('manualEstimatedTime');
+    const taskStageEl = document.getElementById('uploadTaskStage') || document.getElementById('manualTaskStage');
+    
+    if (progressFill) {
+      progressFill.style.width = `${progress}%`;
+    }
+    
+    if (progressPercentage) {
+      progressPercentage.textContent = `${progress}%`;
+    }
+    
+    if (progressText) {
+      progressText.textContent = stage_name;
+    }
+    
+    if (estimatedTimeEl) {
+      if (total_time) {
+        estimatedTimeEl.textContent = `Completed in ${total_time}`;
+      } else if (data.estimated_completion?.remaining_seconds) {
+        const minutes = Math.floor(data.estimated_completion.remaining_seconds / 60);
+        const seconds = data.estimated_completion.remaining_seconds % 60;
+        
+        if (minutes > 0) {
+          estimatedTimeEl.textContent = `About ${minutes}m ${seconds}s remaining`;
+        } else {
+          estimatedTimeEl.textContent = `About ${seconds}s remaining`;
+        }
+      } else {
+        estimatedTimeEl.textContent = `Estimated time: ${estimated_total_time}`;
+      }
+    }
+    
+    if (taskStageEl) {
+      if (data.current_stage) {
+        taskStageEl.textContent = formatStage(data.current_stage);
+      } else {
+        taskStageEl.textContent = stage_name;
+      }
+    }
+    
+    // Update question progress if available
+    if (questions_total > 0) {
+      const questionProgress = document.getElementById('questionProgress');
+      const questionCounter = document.getElementById('questionCounter');
+      
+      if (questionProgress) {
+        questionProgress.classList.add('show');
+      }
+      
+      if (questionCounter) {
+        questionCounter.textContent = `Questions: ${questions_completed}/${questions_total}`;
+      }
+    }
+    
+    // Handle completion
+    if (download_ready) {
+      setTimeout(() => {
+        const progressContainer = document.getElementById('uploadProgressContainer') || document.getElementById('manualProgressContainer');
+        if (progressContainer) {
+          progressContainer.style.display = 'none';
+        }
+        const taskIdToLeave = currentTaskId; // Store before nulling
+        currentTaskId = null;
+        if (socket && taskIdToLeave) {
+          socket.emit('leave_task', { task_id: taskIdToLeave });
+        }
+      }, 2000);
+    }
+  }
+  
+  function handleTaskCompletion(taskId, result) {
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      const progressFill = document.getElementById("uploadProgressFill");
+      const progressPercentage = document.getElementById("uploadProgressPercentage");
+      const progressText = document.getElementById("uploadProgressText");
+      const estimatedTime = document.getElementById("uploadEstimatedTime");
+      const taskStage = document.getElementById("uploadTaskStage");
+      const spinner = document.getElementById("uploadSpinner");
+      
+      // Update UI to show completion
+      if (progressContainer) {
+        progressContainer.classList.remove('processing');
+        progressContainer.classList.add('completed');
+      }
+      if (progressFill) progressFill.style.width = '100%';
+      if (progressPercentage) progressPercentage.textContent = '100%';
+      if (progressText) progressText.textContent = '✅ Task completed successfully!';
+      if (estimatedTime) estimatedTime.textContent = 'Download ready';
+      if (taskStage) taskStage.textContent = 'Completed';
+      if (spinner) spinner.style.display = 'none';
+      
+      // Show download button or auto-download
+      if (result && result.file_path) {
+          setTimeout(() => {
+              window.location.href = `/download_task_result/${taskId}`;
+          }, 1000);
+      }
+      
+      // Refresh credit display
+      refreshCreditDisplay();
+  }
+  
+  function handleTaskFailure(taskId, error) {
+      const progressContainer = document.getElementById("uploadProgressContainer");
+      const estimatedTime = document.getElementById("uploadEstimatedTime");
+      const spinner = document.getElementById("uploadSpinner");
+      
+      if (progressContainer) {
+        progressContainer.classList.remove('processing');
+        progressContainer.classList.add('failed');
+      }
+      if (estimatedTime) {
+        estimatedTime.textContent = 'Please try again';
+      }
+      if (spinner) {
+        spinner.style.display = 'none';
+      }
+      
+      showMessage('uploadMessage', `Error: ${error}`, 'red');
+      
+      setTimeout(() => {
+        if (progressContainer) progressContainer.style.display = 'none';
+      }, 5000);
+  }
+  
+  function formatStage(stage) {
+      const stageMap = {
+          'pdf_extraction': 'Extracting PDF content',
+          'credit_check': 'Checking credits',
+          'question_processing': 'Solving questions',
+          'document_generation': 'Creating document',
+          'completed': 'Completed',
+          'failed': 'Failed'
+      };
+      
+      return stageMap[stage] || stage;
+  }
+
+  async function continueUploadAsyncFallback(formData, startTime) {
+      try {
+          const progressContainer = document.getElementById("uploadProgressContainer");
+          progressContainer.style.display = "block";
+          const progressText = document.getElementById("uploadProgressText");
+          const estimatedTimeText = document.getElementById("uploadEstimatedTime");
+
+          const response = await fetch('/upload_pdf_async', {
+              method: 'POST',
+              body: formData
+          });
+
+          if (response.ok) {
+              const data = await response.json();
+              const taskId = data.task_id;
+              progressText.textContent = data.message;
+              estimatedTimeText.textContent = data.estimated_time;
+
+              // Watch the task progress
+              watchTaskProgress(taskId);
+          } else {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Error processing file.');
+          }
+
+      } catch (error) {
+          const progressContainer = document.getElementById("uploadProgressContainer");
+          progressContainer.style.display = "none";
+          showMessage('uploadMessage', error.message, "black");
+      }
+  }
+
+  </script>
+  <script>
+    async function computeAndDisplayEstimatedTime(taskType, questionCount) {
+      try {
+        const user = await checkUserAuth();
+        const displayName = (user && user.name) ? user.name : 'User';
+
+        let loadData = { load_factor: 1.0 };
+        try {
+          const res = await fetch('/server_load');
+          if (res.ok) loadData = await res.json();
+        } catch (e) {
+          console.warn('Failed to fetch server load:', e);
+        }
+
+        const perQuestionSeconds = questionCount <= 5 ? 8 : (questionCount <= 15 ? 12 : 18);
+        const baseTime = taskType === 'pdf' ? 15 : 10;
+        const docGen = 5 + questionCount * 0.5;
+        const loadFactor = typeof loadData.load_factor === 'number' ? loadData.load_factor : 1.0;
+
+        // Keep uniqueness per user; phone not displayed
+        const seed = user ? `${displayName}|${user.phone_number || ''}` : 'guest';
+        const jitter = 1 + ((hashCode(seed) % 11 - 5) / 100); // -5% .. +5%
+
+        const rawSeconds = baseTime + (perQuestionSeconds * questionCount) + docGen;
+        const totalSeconds = Math.max(30, Math.round(rawSeconds * loadFactor * jitter));
+
+        const targetEl = taskType === 'pdf'
+          ? document.getElementById('uploadEstimatedTime')
+          : document.getElementById('manualEstimatedTime');
+
+        if (targetEl) {
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          const formatted = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+          targetEl.textContent = `${displayName} your assigment will be ready in ${formatted}`;
+        }
+      } catch (err) {
+        console.warn('your assigment will be ready soon...', err);
+      }
+    }
+
+    function hashCode(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h);
+    }
+  </script>
+  </body>
+</html>

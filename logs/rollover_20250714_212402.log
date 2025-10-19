@@ -1,0 +1,67 @@
+2025-07-14 21:24:02,732 - INFO - PRODUCTION ROLLOVER SYSTEM CONFIGURATION
+2025-07-14 21:24:02,732 - INFO - ============================================================
+2025-07-14 21:24:02,732 - INFO - Enabled: True
+2025-07-14 21:24:02,733 - INFO - Dry Run Mode: True
+2025-07-14 21:24:02,733 - INFO - Notification Email: admin@codedebhai.com
+2025-07-14 21:24:02,733 - INFO - Backup Enabled: True
+2025-07-14 21:24:02,733 - INFO - Log Level: INFO
+2025-07-14 21:24:02,733 - INFO - Max Retries: 3
+2025-07-14 21:24:02,733 - INFO - Alert Threshold: 1000
+2025-07-14 21:24:02,733 - INFO - Enable Alerts: True
+2025-07-14 21:24:02,733 - INFO - ============================================================
+2025-07-14 21:24:02,733 - INFO - STARTING MONTHLY ROLLOVER PROCESS
+2025-07-14 21:24:02,733 - INFO - *** DRY RUN MODE - NO CHANGES WILL BE MADE ***
+2025-07-14 21:24:02,733 - INFO - Rollover Date: 2025-07-14 21:24:02
+2025-07-14 21:24:02,734 - INFO - BACKUP: Would create backup at backups/rollover_backup_20250714_212402.sql
+2025-07-14 21:24:07,750 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/users?select=%2A&credits=gt.0 "HTTP/2 200 OK"
+2025-07-14 21:24:07,759 - INFO - Found 3 users with credits to process
+2025-07-14 21:24:07,759 - INFO - Processing rollover for Test User 1 (9999999001) with 10 credits
+2025-07-14 21:24:09,243 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999001&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 21:24:09,244 - INFO - ROLLOVER: Test User 1 (9999999001) - 10 credits rolled over (monthly plan within 1 month)
+2025-07-14 21:24:09,244 - INFO - AUDIT: ROLLOVER - 9999999001 - 10 credits - monthly plan
+2025-07-14 21:24:09,244 - INFO - Processing rollover for Test User 2 (9999999002) with 10 credits
+2025-07-14 21:24:09,498 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999002&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 21:24:09,500 - INFO - ROLLOVER: Test User 2 (9999999002) - 10 credits rolled over (power plan within 1 month)
+2025-07-14 21:24:09,500 - INFO - AUDIT: ROLLOVER - 9999999002 - 10 credits - power plan
+2025-07-14 21:24:09,500 - INFO - Processing rollover for Test User with 0 credits (9999999004) with 10 credits
+2025-07-14 21:24:09,624 - INFO - HTTP Request: GET https://dnyejdazlypnefdqekhr.supabase.co/rest/v1/payments?select=%2A&phone_number=eq.9999999004&order=created_at.desc&limit=1 "HTTP/2 200 OK"
+2025-07-14 21:24:09,636 - INFO - ROLLOVER: Test User with 0 credits (9999999004) - 10 credits rolled over (monthly plan within 1 month)
+2025-07-14 21:24:09,637 - INFO - AUDIT: ROLLOVER - 9999999004 - 10 credits - monthly plan
+2025-07-14 21:24:09,637 - INFO - 
+============================================================
+2025-07-14 21:24:09,638 - INFO - MONTHLY ROLLOVER REPORT
+2025-07-14 21:24:09,638 - INFO - ============================================================
+2025-07-14 21:24:09,639 - INFO - Rollover Date: 2025-07-14 21:24:02
+2025-07-14 21:24:09,640 - INFO - Duration: 0:00:06.905832
+2025-07-14 21:24:09,640 - INFO - Dry Run Mode: True
+2025-07-14 21:24:09,641 - INFO - Total Users Processed: 3
+2025-07-14 21:24:09,642 - INFO - Users with Credits Rolled Over: 3
+2025-07-14 21:24:09,642 - INFO - Users with Credits Expired: 0
+2025-07-14 21:24:09,642 - INFO - Total Credits Rolled Over: 30
+2025-07-14 21:24:09,643 - INFO - Total Credits Expired: 0
+2025-07-14 21:24:09,643 - INFO - ============================================================
+2025-07-14 21:24:09,643 - INFO - MONTHLY ROLLOVER PROCESS COMPLETED
+2025-07-14 21:24:09,643 - INFO - ============================================================
+2025-07-14 21:24:09,644 - INFO - EMAIL NOTIFICATION: Monthly Rollover Completed - 2025-07-14
+2025-07-14 21:24:09,646 - INFO - Body: 
+Monthly Credit Rollover Report
+==============================
+
+Date: 2025-07-14 21:24:02
+Duration: 0:00:06.905832
+Dry Run Mode: True
+
+Statistics:
+- Total Users Processed: 3
+- Users with Credits Rolled Over: 3
+- Users with Credits Expired: 0
+- Total Credits Rolled Over: 30
+- Total Credits Expired: 0
+- Errors: 0
+
+Business Impact:
+- Revenue Protected: 3 paying customers retained credits
+- Churn Prevention: 30 credits preserved for active subscribers
+
+System Status: TEST MODE
+
