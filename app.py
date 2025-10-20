@@ -2934,7 +2934,7 @@ def index():
             # User no longer exists, clear session
             flask_session.clear()
     
-    return render_template('index.html')
+    return render_template('index.html', firebase_api_key=os.getenv('FIREBASE_API_KEY'))
 
 @app.route('/check_pdf_questions', methods=['POST'])
 def check_pdf_questions():
@@ -3836,7 +3836,7 @@ def verify_otp():
 @app.route('/firebase_auth', methods=['GET'])
 def firebase_auth():
     """Serve Firebase authentication page"""
-    return render_template('firebase_auth.html')
+    return render_template('firebase_auth.html', firebase_api_key=os.getenv('FIREBASE_API_KEY'))
 
 @app.route('/setup_firebase_session', methods=['POST'])
 def setup_firebase_session():

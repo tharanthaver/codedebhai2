@@ -7,7 +7,7 @@ Your website now supports **real SMS OTP verification** using MSG91! Here's how 
 ### 1. **Environment Configuration**
 Your `.env` file is already configured with:
 ```env
-MSG91_AUTH_KEY=459746AhekvNxKom868702e3bP1
+MSG91_AUTH_KEY=your_msg91_auth_key_here
 MSG91_SENDER_ID=MSGIND
 OTP_PROVIDER=msg91
 ```
