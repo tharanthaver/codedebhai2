@@ -27,15 +27,43 @@ class FirebaseOTP:
             if firebase_cred_json:
                 try:
                     cred_dict = json.loads(firebase_cred_json)
-                    # Fix private key newlines if needed
+                    # Fix private key formatting issues
                     if 'private_key' in cred_dict:
-                        cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
+                        private_key = cred_dict['private_key']
+                        # Handle various newline escape scenarios
+                        private_key = private_key.replace('\\n', '\n')
+                        private_key = private_key.replace('\\\\n', '\n')
+                        
+                        # Ensure proper PEM format
+                        if not private_key.startswith('-----BEGIN PRIVATE KEY-----'):
+                            # If it's base64 encoded, decode it
+                            try:
+                                import base64
+                                decoded_key = base64.b64decode(private_key).decode('utf-8')
+                                private_key = decoded_key
+                            except:
+                                pass  # Not base64, continue with original
+                        
+                        # Ensure proper line breaks in PEM format
+                        if '-----BEGIN PRIVATE KEY-----' in private_key and '-----END PRIVATE KEY-----' in private_key:
+                            lines = private_key.split('\n')
+                            formatted_lines = []
+                            for line in lines:
+                                line = line.strip()
+                                if line:
+                                    formatted_lines.append(line)
+                            private_key = '\n'.join(formatted_lines)
+                        
+                        cred_dict['private_key'] = private_key
+                        logging.info(f"Private key format: starts with {private_key[:50]}...")
+                    
                     cred = credentials.Certificate(cred_dict)
                     logging.info("Firebase credentials loaded from environment variable")
                 except json.JSONDecodeError as e:
                     logging.error(f"Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
                 except Exception as e:
                     logging.error(f"Failed to initialize Firebase credentials: {e}")
+                    logging.error(f"Private key preview: {cred_dict.get('private_key', 'N/A')[:100]}..." if 'cred_dict' in locals() else "No cred_dict available")
 
             # Method 1a: From base64-encoded JSON (Render-safe)
             if not cred:
