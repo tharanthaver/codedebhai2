@@ -41,17 +41,19 @@ load_dotenv()  # This loads the variables from .env into your environment
 
 
 
-app = Flask(__name__, template_folder='templates')
+app = Flask(__name__, template_folder='templates', static_folder='static', static_url_path='/static')
 
 # Configure Flask app for better connection handling
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
-# Initialize SocketIO for real-time communication with enhanced connection handling
+# Initialize SocketIO with minimal configuration for Render stability
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', 
-                   ping_timeout=120, ping_interval=25, 
-                   engineio_logger=False, socketio_logger=False)
+                   ping_timeout=30, ping_interval=10, 
+                   engineio_logger=False, socketio_logger=False,
+                   logger=False, always_connect=False,
+                   max_http_buffer_size=1000000)
 
 UPLOAD_FOLDER = 'solved_files'
 TEMP_FOLDER = 'temp'

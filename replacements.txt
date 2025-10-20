@@ -1,0 +1,5 @@
+regex:(?i)cfsk_[A-Za-z0-9_]+==>REDACTED_CF_SECRET
+regex:(?i)CASHFREE_SECRET_KEY\s*=\s*.*==>CASHFREE_SECRET_KEY=your_cashfree_secret_key_here
+regex:(?i)CASHFREE_APP_ID\s*=\s*.*==>CASHFREE_APP_ID=your_cashfree_app_id_here
+regex:(?i)x-client-secret\s*["\']?:\s*["\']cfsk_[A-Za-z0-9_]+["\']==>x-client-secret: "REDACTED"
+regex:(?i)x-client-id\s*["\']?:\s*["\'][A-Za-z0-9_]+["\']==>x-client-id: "REDACTED"
