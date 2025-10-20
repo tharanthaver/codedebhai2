@@ -18,6 +18,10 @@ python-docx==1.1.2
 python-dotenv==1.0.1
 requests==2.32.3
 urllib3==2.0.7
+
+# Pydantic v1 (required by cashfree-pg)
+pydantic>=1.10.5,<2
+
 # Cashfree Payment Gateway
 cashfree-pg==4.3.10
 
@@ -27,7 +31,10 @@ APScheduler==3.10.4
 # Celery and Redis for async processing
 celery==5.5.3
 redis==6.2.0
-anthropic==0.57.1
+
+# Anthropic SDK compatible with Pydantic v1
+anthropic==0.18.1
+
 supervisor==4.2.5
 psutil==5.9.6
 kombu==5.5.4
@@ -42,6 +49,6 @@ psycopg2-binary==2.9.9
 
 # Firebase Admin SDK for OTP authentication
 firebase-admin==6.5.0
-pydantic>=2.7,<3
-# Supabase Python client (compatible range)
-supabase>=2.7,<3
+
+# Supabase Python client compatible with Pydantic v1
+supabase>=1.0,<2
