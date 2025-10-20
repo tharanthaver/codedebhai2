@@ -27,10 +27,32 @@ class FirebaseOTP:
             if firebase_cred_json:
                 try:
                     cred_dict = json.loads(firebase_cred_json)
+                    # Fix private key newlines if needed
+                    if 'private_key' in cred_dict:
+                        cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
                     cred = credentials.Certificate(cred_dict)
                     logging.info("Firebase credentials loaded from environment variable")
-                except json.JSONDecodeError:
-                    logging.error("Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON")
+                except json.JSONDecodeError as e:
+                    logging.error(f"Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
+                except Exception as e:
+                    logging.error(f"Failed to initialize Firebase credentials: {e}")
+
+            # Method 1a: From base64-encoded JSON (Render-safe)
+            if not cred:
+                firebase_cred_b64 = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON_BASE64')
+                if firebase_cred_b64:
+                    try:
+                        import base64, tempfile
+                        decoded = base64.b64decode(firebase_cred_b64)
+                        tmp_dir = tempfile.gettempdir()
+                        tmp_path = os.path.join(tmp_dir, 'firebase-service-account.json')
+                        with open(tmp_path, 'wb') as f:
+                            f.write(decoded)
+                        os.environ['FIREBASE_SERVICE_ACCOUNT_PATH'] = tmp_path
+                        cred = credentials.Certificate(tmp_path)
+                        logging.info("Firebase credentials loaded from base64 env via temp file")
+                    except Exception as e:
+                        logging.error(f"Failed to load base64 Firebase credentials: {e}")
             
             # Method 2: From file path
             if not cred:
