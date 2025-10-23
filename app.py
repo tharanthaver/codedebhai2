@@ -154,7 +154,7 @@ if not secret_key:
 app.secret_key = secret_key
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = 30 * 24 * 60 * 60  # 30 days in seconds
-app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_SECURE'] = True  # Enable HTTPS-only cookies for production
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
@@ -162,8 +162,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 rollover_scheduler.init_app(app)
 add_scheduler_routes(app)
 
-# Initialize Firebase OTP service
-firebase_otp_service = FirebaseOTP()
+# Import Firebase OTP service
+from firebase_otp import firebase_otp_service
 
 # Create a global requests session for connection reuse
 session = requests.Session()
@@ -3945,7 +3945,6 @@ def verify_firebase_otp():
         
         # Verify Firebase ID token
         try:
-            firebase_otp_service = FirebaseOTP()
             result = firebase_otp_service.verify_id_token(firebase_id_token)
             
             if not result['success']:

@@ -94,6 +94,47 @@ class FirebaseOTP:
         except Exception as e:
             print(f"❌ Firebase initialization error: {e}")
             raise
+    
+    def verify_id_token(self, id_token):
+        """Verify Firebase ID token and extract user information"""
+        try:
+            # Verify the ID token
+            decoded_token = auth.verify_id_token(id_token)
+            
+            # Extract phone number from the token
+            phone_number = decoded_token.get('phone_number', '')
+            
+            # Remove country code if present (assuming +91 for India)
+            if phone_number.startswith('+91'):
+                phone_number = phone_number[3:]
+            elif phone_number.startswith('91') and len(phone_number) == 12:
+                phone_number = phone_number[2:]
+            
+            return {
+                'success': True,
+                'phone_number': phone_number,
+                'uid': decoded_token.get('uid'),
+                'firebase_claims': decoded_token
+            }
+            
+        except auth.InvalidIdTokenError as e:
+            print(f"❌ Invalid Firebase ID token: {e}")
+            return {
+                'success': False,
+                'error': 'Invalid Firebase token'
+            }
+        except auth.ExpiredIdTokenError as e:
+            print(f"❌ Expired Firebase ID token: {e}")
+            return {
+                'success': False,
+                'error': 'Firebase token has expired'
+            }
+        except Exception as e:
+            print(f"❌ Firebase token verification error: {e}")
+            return {
+                'success': False,
+                'error': f'Token verification failed: {str(e)}'
+            }
 
 # Singleton instance
 firebase_otp_service = FirebaseOTP()
