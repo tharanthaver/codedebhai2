@@ -19,9 +19,9 @@ firebase-service-account.json
 .env
 
 # Additional exclusions for GitHub
-*.png
-*.jpg
-*.jpeg
+# *.png
+# *.jpg
+# *.jpeg
 *.gif
 *.bmp
 *.tiff
@@ -35,6 +35,8 @@ firebase-service-account.json
 !static/images/*.jpeg
 !static/images/*.gif
 !static/images/*.ico
+!static/images/*.mp4
+!static/images/*.zip
 *.avi
 *.mov
 *.wmv
