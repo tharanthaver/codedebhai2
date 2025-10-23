@@ -48,9 +48,9 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
-# Initialize SocketIO with minimal configuration for Render stability
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', 
-                   ping_timeout=30, ping_interval=10, 
+# Initialize SocketIO with gevent for better Render compatibility
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent', 
+                   ping_timeout=60, ping_interval=25, 
                    engineio_logger=False, socketio_logger=False,
                    logger=False, always_connect=False,
                    max_http_buffer_size=1000000)
