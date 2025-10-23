@@ -64,8 +64,8 @@ def create_simple_screenshot(output_text, width=900, height=None):
             lines = ["No output."]
         
         # Calculate dimensions for minimal processing
-        line_height = 20  # Terminal-like line spacing
-        padding = 16
+        line_height = 28  # Increased line spacing to prevent text collision
+        padding = 20      # Increased padding for better margins
         max_chars = max(len(line) for line in lines)
         actual_width = min(width, max(600, max_chars * 11 + padding * 2))
         content_height = len(lines) * line_height + padding * 2
@@ -133,16 +133,17 @@ def create_ultra_fast_screenshot(output_text):
         except Exception:
             font = None
         
-        # Draw text quickly
-        y_pos = 20
+        # Draw text quickly with better spacing
+        y_pos = 25  # Increased top margin
+        line_spacing = 28  # Increased line spacing to prevent collision
         for line in lines:
-            if y_pos > height - 30:
+            if y_pos > height - 40:  # Increased bottom margin
                 break
             # Truncate long lines for speed
             if len(line) > 120:
                 line = line[:117] + "..."
-            draw.text((20, y_pos), line, fill='#ffffff', font=font)
-            y_pos += 22
+            draw.text((25, y_pos), line, fill='#ffffff', font=font)  # Increased left margin
+            y_pos += line_spacing
         
         # Quick PNG export
         buffer = io.BytesIO()

@@ -2123,9 +2123,9 @@ def create_screenshot(output_text, user_name='Developer', document_terminal_path
                 
                 # Calculate dimensions based on real VS Code
                 char_width = 7      # Character width for Consolas 14px
-                line_height = 18    # Line height in VS Code terminal
-                padding_x = 8       # Left padding
-                padding_y = 6       # Top padding
+                line_height = 22    # Line height in VS Code terminal (increased to prevent overlapping)
+                padding_x = 10      # Left padding (increased for better spacing)
+                padding_y = 10      # Top padding (increased for better spacing)
                 
                 # Panel dimensions (exact measurements from screenshot)
                 panel_height = 35   # Top panel with PROBLEMS, OUTPUT, etc.
