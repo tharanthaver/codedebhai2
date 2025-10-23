@@ -28,6 +28,13 @@ firebase-service-account.json
 *.ico
 *.pdf
 *.mp4
+
+# Allow static images for the website
+!static/images/*.png
+!static/images/*.jpg
+!static/images/*.jpeg
+!static/images/*.gif
+!static/images/*.ico
 *.avi
 *.mov
 *.wmv
