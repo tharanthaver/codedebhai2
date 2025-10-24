@@ -282,15 +282,17 @@ class DatabaseHelper:
     def _get_direct_connection():
         """Get direct PostgreSQL connection to bypass RLS"""
         import psycopg2
-        # Prefer pooled transaction URL if present
+        
+        # Prefer pooled transaction URL if present (production)
         connection_string = os.getenv("SUPABASE_POOLER_TRANSACTION_URL")
         if connection_string:
             try:
+                logging.info("🔗 Attempting pooled connection...")
                 return psycopg2.connect(connection_string)
             except Exception as e:
-                logging.warning(f"Pooled connection failed: {e}")
+                logging.warning(f"⚠️ Pooled connection failed: {e}")
 
-        # Fallback: direct connection via discrete env vars (no hardcoded secrets)
+        # Fallback: direct connection via discrete env vars
         host = os.getenv("SUPABASE_DB_HOST")
         database = os.getenv("SUPABASE_DB_NAME", "postgres")
         user = os.getenv("SUPABASE_DB_USER", "postgres")
@@ -298,15 +300,24 @@ class DatabaseHelper:
         port = int(os.getenv("SUPABASE_DB_PORT", "5432"))
 
         if not host or not password:
-            raise RuntimeError("Missing SUPABASE_DB_HOST or SUPABASE_DB_PASSWORD")
+            raise RuntimeError("❌ Missing SUPABASE_DB_HOST or SUPABASE_DB_PASSWORD")
 
-        return psycopg2.connect(
-            host=host,
-            database=database,
-            user=user,
-            password=password,
-            port=port
-        )
+        try:
+            logging.info(f"🔗 Attempting direct connection to {host}:{port}")
+            return psycopg2.connect(
+                host=host,
+                database=database,
+                user=user,
+                password=password,
+                port=port,
+                connect_timeout=10,
+                sslmode='require'
+            )
+        except Exception as e:
+            logging.error(f"❌ Direct connection failed: {e}")
+            # Try using Supabase client as final fallback
+            logging.info("🔄 Falling back to Supabase client for database operations")
+            raise RuntimeError(f"Database connection failed: {e}")
     
     @staticmethod
     def get_payment_plans():
@@ -487,9 +498,9 @@ class DatabaseHelper:
     def create_payment_record(user_id: int, phone_number: str, gateway_order_id: str, 
                             gateway_payment_id: str, amount: int, credits_added: int, 
                             plan_type: str, payment_status: str = 'pending', gateway_type: str = 'cashfree'):
-        """Create a payment record with enhanced logging"""
+        """Create a payment record with enhanced logging and fallback to Supabase client"""
         try:
-            # Use direct connection to bypass RLS
+            # Try direct connection first
             conn = DatabaseHelper._get_direct_connection()
             cursor = conn.cursor()
             
@@ -526,9 +537,37 @@ class DatabaseHelper:
                 logging.info(f"💳 Payment record created: ID {payment_record['id']}, Order: {gateway_order_id}, Amount: ₹{amount/100}, Credits: {credits_added}")
                 return payment_record
             return None
+            
         except Exception as e:
-            logging.error(f"❌ Error creating payment record: {e}")
-            return None
+            logging.warning(f"⚠️ Direct connection failed for payment record: {e}")
+            # Fallback to Supabase client
+            try:
+                logging.info("🔄 Using Supabase client fallback for payment record")
+                payment_data = {
+                    'user_id': user_id,
+                    'phone_number': phone_number,
+                    'gateway_order_id': gateway_order_id,
+                    'gateway_payment_id': gateway_payment_id,
+                    'gateway_type': gateway_type,
+                    'amount': amount,
+                    'credits_added': credits_added,
+                    'plan_type': plan_type,
+                    'payment_status': payment_status,
+                    'webhook_received': False,
+                    'created_at': datetime.utcnow().isoformat(),
+                    'updated_at': datetime.utcnow().isoformat()
+                }
+                
+                response = supabase.table('payments').insert(payment_data).execute()
+                if response.data:
+                    payment_record = response.data[0]
+                    logging.info(f"💳 Payment record created via Supabase: ID {payment_record['id']}, Order: {gateway_order_id}")
+                    return payment_record
+                return None
+                
+            except Exception as fallback_error:
+                logging.error(f"❌ Error creating payment record (both methods failed): {fallback_error}")
+                return None
     
     @staticmethod
     def update_payment_status(gateway_order_id: str, status: str, gateway_payment_id: str = None):
