@@ -41,8 +41,8 @@ vine==5.1.0
 # Real-time progress tracking
 Flask-SocketIO==5.4.1
 
-# PostgreSQL adapter for direct database connections
-psycopg2-binary==2.9.9
+# PostgreSQL adapter for direct database connections - Python 3.13 compatible
+psycopg2-binary==2.9.10
 
 # Firebase Admin SDK for OTP authentication
 firebase-admin==6.5.0
