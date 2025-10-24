@@ -4383,9 +4383,13 @@ async function resendFirebaseOtp() {
     // Check if we're coming from a payment success page
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('payment_success') === 'true') {
-      // Refresh credits multiple times to ensure they're updated
-      setTimeout(() => refreshCreditDisplay(), 2000);
-      setTimeout(() => refreshCreditDisplay(), 4000);
+      // Show success notification
+      showNotification('🎉 Payment successful! Credits have been added to your account.', 'success');
+      
+      // Refresh credits multiple times to ensure they're updated (faster intervals)
+      setTimeout(() => refreshCreditDisplay(), 500);
+      setTimeout(() => refreshCreditDisplay(), 1500);
+      setTimeout(() => refreshCreditDisplay(), 3000);
       
       // Clear the URL parameter
       window.history.replaceState({}, document.title, window.location.pathname);

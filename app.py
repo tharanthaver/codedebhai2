@@ -1119,8 +1119,8 @@ def payment_success():
         <script>
             // Configuration
             const ORDER_ID = '{order_id}';
-            const MAX_RETRIES = 3;
-            const RETRY_DELAY = 3000; // 3 seconds
+            const MAX_RETRIES = 2;
+            const RETRY_DELAY = 2000; // 2 seconds
             
             // Auto-process credits when page loads
             window.addEventListener('DOMContentLoaded', function() {{
@@ -1133,10 +1133,10 @@ def payment_success():
                     manualBtn.style.display = 'none';
                 }}
                 
-                // Auto-process payment after 3 seconds (gives page time to load)
-                setTimeout(() => {{
-                    processPayment();
-                }}, 3000);
+                // Auto-process payment after 1 second (faster processing)
+                setTimeout(() => {
+                    processPayment()
+                }, 1000);
             }});
             
             function showMessage(message, type = 'processing') {{
@@ -1171,7 +1171,7 @@ def payment_success():
                             'Content-Type': 'application/json',
                         }},
                         credentials: 'same-origin', // Include session cookies
-                        signal: AbortSignal.timeout(15000) // 15 second timeout
+                        signal: AbortSignal.timeout(10000) // 10 second timeout (faster)
                     }});
                     
                     // Check if response is ok
@@ -1185,10 +1185,10 @@ def payment_success():
                     // Success case
                     showMessage('✅ ' + (data.message || 'Credits added successfully! Redirecting to dashboard...'), 'success');
                     
-                    // Redirect to home after 3 seconds with payment success parameter
+                    // Redirect to home immediately after success (faster redirect)
                     setTimeout(() => {{
                         window.location.href = '/?payment_success=true&credits_updated=true';
-                    }}, 3000);
+                    }}, 1500);
                     
                 }} catch (error) {{
                     console.error('Payment processing error:', error);
