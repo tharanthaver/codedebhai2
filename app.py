@@ -985,16 +985,11 @@ def payment_success():
             return redirect(url_for('index', error='User session expired'))
     
     # Check payment status
-if payment_record['status'] == 'paid':
-    logging.info(f"✅ Payment already processed for order: {order_id}")
-else:
-    logging.info(f"⏳ Payment status is '{payment_record['status']}' for order: {order_id}, waiting for webhook")
-    flask_session['user'] = user
-    flask_session['authenticated'] = True
-    flask_session.permanent = True
-    current_user = user
-    logging.info(f"Session restored for user {payment_record['phone_number']} from payment record")
-
+    if payment_record['status'] == 'paid':
+        logging.info(f"✅ Payment already processed for order: {order_id}")
+    else:
+        logging.info(f"⏳ Payment status is '{payment_record['status']}' for order: {order_id}, waiting for webhook")
+    
     success_html = f"""
     <!DOCTYPE html>
     <html>
@@ -1272,8 +1267,6 @@ else:
     </html>
     """
     return success_html
-
-
 
 def verify_webhook_signature(payload, signature, timestamp, secret_key):
     """Verify Cashfree webhook signature for security"""
