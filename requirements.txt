@@ -7,7 +7,6 @@ Flask==3.1.0
 Flask-Session==0.8.0
 gunicorn==23.0.0
 eventlet==0.36.1
-gevent==24.2.1
 idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.5
