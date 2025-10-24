@@ -4819,25 +4819,25 @@ async function resendFirebaseOtp() {
   function initializeSocketIO() {
     try {
       if (typeof io === 'function' && !socketInitialized) {
-        // Production-ready Socket.IO client configuration
+        // Production-optimized Socket.IO client configuration
         socket = io({
-          // Transport configuration - prioritize WebSocket but allow polling fallback
-          transports: ['websocket', 'polling'],
-          upgrade: true,
+          // Transport configuration - prioritize polling for stability
+          transports: ['polling', 'websocket'],
+          upgrade: false,
           
           // Connection timeout settings
-          timeout: 30000,                    // Increased from 20000 to 30000ms
+          timeout: 20000,                    // Reduced to 20s for faster failure detection
           
-          // Reconnection strategy - enhanced for production stability
+          // Reconnection strategy - optimized for production stability
           reconnection: true,
-          reconnectionDelay: 2000,           // Increased from 1000 to 2000ms
-          reconnectionDelayMax: 10000,       // Maximum delay between reconnection attempts
-          reconnectionAttempts: 8,           // Increased from 5 to 8 attempts
-          maxReconnectionAttempts: 15,       // Increased from 10 to 15 total attempts
+          reconnectionDelay: 1000,           // Start with 1s delay
+          reconnectionDelayMax: 5000,        // Max 5s delay between attempts
+          reconnectionAttempts: 10,          // Increased attempts for better reliability
+          maxReconnectionAttempts: 10,       // Maximum reconnection attempts
           
           // Ping/Pong settings - match server configuration
-          pingTimeout: 120000,               // Match server ping_timeout (120s)
-          pingInterval: 30000,               // Match server ping_interval (30s)
+          pingTimeout: 60000,                // Match server ping_timeout (60s)
+          pingInterval: 25000,               // Match server ping_interval (25s)
           
           // Connection behavior
           forceNew: false,                   // Reuse existing connection if available
@@ -4845,10 +4845,10 @@ async function resendFirebaseOtp() {
           
           // Error handling
           autoConnect: true,                 // Automatically connect on initialization
-          randomizationFactor: 0.5,          // Add jitter to reconnection delays
+          randomizationFactor: 0.3,          // Reduced jitter for faster reconnection
           
           // Additional production settings
-          rememberUpgrade: true,             // Remember successful transport upgrades
+          rememberUpgrade: false,            // Don't remember upgrades to prevent issues
           closeOnBeforeunload: true          // Clean disconnect on page unload
         });
         
