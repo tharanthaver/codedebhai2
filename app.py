@@ -51,7 +51,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 # Initialize SocketIO with production-ready configuration
 socketio = SocketIO(app, 
                    cors_allowed_origins="*", 
-                   async_mode='threading',
+                   async_mode='threading',         # Using threading for Python 3.13 compatibility
                    # Enhanced timeout settings for production stability
                    ping_timeout=120,           # Increased from 60 to 120 seconds
                    ping_interval=30,           # Increased from 25 to 30 seconds

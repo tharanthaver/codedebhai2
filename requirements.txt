@@ -6,8 +6,7 @@ colorama==0.4.6
 Flask==3.1.0
 Flask-Session==0.8.0
 gunicorn==23.0.0
-gevent==23.9.1
-gevent-websocket==0.10.1
+eventlet==0.36.1
 idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.5
