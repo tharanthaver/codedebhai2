@@ -818,7 +818,7 @@ def create_payment_session():
         
         logging.info(f"Using Cashfree base URL: {base_url}")
 
-        # Payment session payload
+        # Payment session payload with production URLs
         payload = {
             "order_id": order_id,
             "order_amount": amount,
@@ -830,8 +830,8 @@ def create_payment_session():
                 "customer_phone": customer_phone
             },
             "order_meta": {
-                "return_url": f"http://localhost:5000/payment-success?order_id={order_id}",
-                "notify_url": f"http://localhost:5000/payment-webhook"
+                "return_url": f"https://codedebhai2.onrender.com/payment-success?order_id={order_id}",
+                "notify_url": f"https://codedebhai2.onrender.com/payment-webhook"
             },
             "order_expiry_time": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }

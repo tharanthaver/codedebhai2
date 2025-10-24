@@ -2855,10 +2855,10 @@ def factorial(n):
                 if (data.success && data.payment_session_id) {
                   console.log('🔗 Initializing Cashfree SDK...');
                   
-                  // Initialize Cashfree SDK
-                  const cashfree = Cashfree({
-                    mode: "sandbox" // Change to "production" for live payments
-                  });
+                  // Initialize Cashfree SDK for production
+          const cashfree = Cashfree({
+            mode: "production" // Production mode for real payments
+          });
                   
                   // Use Cashfree SDK to redirect to checkout
                   const checkoutOptions = {

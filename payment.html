@@ -201,9 +201,9 @@
 
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
     <script>
-        // Initialize Cashfree SDK
+        // Initialize Cashfree SDK for production
         const cashfree = Cashfree({
-            mode: "sandbox" // Change to "production" for live payments
+            mode: "production" // Production mode for real payments
         });
 
         async function initiatePayment() {
