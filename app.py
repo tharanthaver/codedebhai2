@@ -837,8 +837,8 @@ def create_payment_session():
                 "customer_phone": customer_phone
             },
             "order_meta": {
-                "return_url": f"https://codedebhai2.onrender.com/payment-success?order_id={order_id}",
-                "notify_url": f"https://codedebhai2.onrender.com/payment-webhook"
+                "return_url": os.getenv('PAYMENT_RETURN_URL', f"https://codedebhai2.onrender.com/payment-success?order_id={order_id}"),
+                "notify_url": os.getenv('PAYMENT_WEBHOOK_URL', f"https://codedebhai2.onrender.com/payment-webhook")
             },
             "order_expiry_time": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
