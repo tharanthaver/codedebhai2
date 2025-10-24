@@ -4819,27 +4819,93 @@ async function resendFirebaseOtp() {
   function initializeSocketIO() {
     try {
       if (typeof io === 'function' && !socketInitialized) {
+        // Production-ready Socket.IO client configuration
         socket = io({
+          // Transport configuration - prioritize WebSocket but allow polling fallback
           transports: ['websocket', 'polling'],
-          timeout: 20000,
+          upgrade: true,
+          
+          // Connection timeout settings
+          timeout: 30000,                    // Increased from 20000 to 30000ms
+          
+          // Reconnection strategy - enhanced for production stability
           reconnection: true,
-          reconnectionDelay: 1000,
-          reconnectionAttempts: 5,
-          maxReconnectionAttempts: 10
+          reconnectionDelay: 2000,           // Increased from 1000 to 2000ms
+          reconnectionDelayMax: 10000,       // Maximum delay between reconnection attempts
+          reconnectionAttempts: 8,           // Increased from 5 to 8 attempts
+          maxReconnectionAttempts: 15,       // Increased from 10 to 15 total attempts
+          
+          // Ping/Pong settings - match server configuration
+          pingTimeout: 120000,               // Match server ping_timeout (120s)
+          pingInterval: 30000,               // Match server ping_interval (30s)
+          
+          // Connection behavior
+          forceNew: false,                   // Reuse existing connection if available
+          multiplex: true,                   // Allow multiple namespaces on same connection
+          
+          // Error handling
+          autoConnect: true,                 // Automatically connect on initialization
+          randomizationFactor: 0.5,          // Add jitter to reconnection delays
+          
+          // Additional production settings
+          rememberUpgrade: true,             // Remember successful transport upgrades
+          closeOnBeforeunload: true          // Clean disconnect on page unload
         });
         
+        // Enhanced connection event handlers
         socket.on('connect', () => {
           console.log('✅ Socket.IO connected successfully');
+          console.log('🔗 Connection ID:', socket.id);
+          console.log('🚀 Transport:', socket.io.engine.transport.name);
           socketInitialized = true;
+          
+          // Reset any connection error states
+          document.body.classList.remove('socket-disconnected');
+          document.body.classList.add('socket-connected');
         });
         
         socket.on('disconnect', (reason) => {
           console.log('❌ Socket.IO disconnected:', reason);
+          console.log('🔄 Will attempt reconnection:', socket.io.reconnection());
           socketInitialized = false;
+          
+          // Update UI to reflect disconnection
+          document.body.classList.remove('socket-connected');
+          document.body.classList.add('socket-disconnected');
         });
         
         socket.on('connect_error', (error) => {
-          console.error('🔴 Socket.IO connection error:', error);
+          console.error('🔴 Socket.IO connection error:', error.message);
+          console.log('🔄 Reconnection attempt in:', socket.io.reconnectionDelay(), 'ms');
+        });
+        
+        // Handle reconnection events
+        socket.on('reconnect', (attemptNumber) => {
+          console.log('🔄 Socket.IO reconnected after', attemptNumber, 'attempts');
+          document.body.classList.remove('socket-disconnected');
+          document.body.classList.add('socket-connected');
+        });
+        
+        socket.on('reconnect_attempt', (attemptNumber) => {
+          console.log('🔄 Socket.IO reconnection attempt #', attemptNumber);
+        });
+        
+        socket.on('reconnect_error', (error) => {
+          console.error('🔴 Socket.IO reconnection error:', error.message);
+        });
+        
+        socket.on('reconnect_failed', () => {
+          console.error('❌ Socket.IO reconnection failed - max attempts reached');
+          // Could show user notification here
+        });
+        
+        // Handle transport upgrade events
+        socket.io.on('upgrade', () => {
+          console.log('⬆️ Socket.IO transport upgraded to:', socket.io.engine.transport.name);
+        });
+        
+        socket.io.on('upgradeError', (error) => {
+          console.warn('⚠️ Socket.IO transport upgrade failed:', error);
         });
         
         return true;
@@ -4865,14 +4931,22 @@ async function resendFirebaseOtp() {
     }, 2000);
   }
 
-  // Monitor task progress with enhanced error handling
+  // Enhanced task progress monitoring with robust error handling
   function watchTaskProgress(taskId) {
-      // Enhanced socket check with initialization retry
+      // Enhanced socket check with initialization retry and timeout
       if (!socket || !socketInitialized) {
           console.warn('⚠️ Socket not ready, attempting to initialize...');
           if (initializeSocketIO()) {
-            // Wait a moment for connection to establish
-            setTimeout(() => watchTaskProgress(taskId), 1000);
+            // Wait for connection to establish with timeout
+            let connectionTimeout = setTimeout(() => {
+              console.error('❌ Socket connection timeout - progress tracking disabled for task:', taskId);
+              // Fallback to polling-based progress tracking could be implemented here
+            }, 10000);
+            
+            socket.once('connect', () => {
+              clearTimeout(connectionTimeout);
+              watchTaskProgress(taskId);
+            });
             return;
           } else {
             console.warn('❌ Socket initialization failed - progress tracking disabled for task:', taskId);
@@ -4881,9 +4955,14 @@ async function resendFirebaseOtp() {
       }
 
       try {
-        // Join task room
-        socket.emit('join_task', { task_id: taskId });
-        console.log('📡 Joined task room:', taskId);
+        // Join task room with error handling
+        socket.emit('join_task', { task_id: taskId }, (acknowledgment) => {
+          if (acknowledgment && acknowledgment.success) {
+            console.log('📡 Successfully joined task room:', taskId);
+          } else {
+            console.warn('⚠️ Failed to join task room:', taskId, acknowledgment);
+          }
+        });
         
         // Add processing animation
         const progressContainer = document.getElementById("uploadProgressContainer");
@@ -4891,32 +4970,72 @@ async function resendFirebaseOtp() {
           progressContainer.classList.add('processing');
         }
 
-        // Handle task updates with error handling
+        // Handle task updates with enhanced error handling and deduplication
         socket.off('task_update'); // Remove previous listeners
         socket.on('task_update', function (data) {
-          if (data.task_id === taskId) {
-              const task = data.data;
-              console.log(`Task ${taskId} update`, task);
-              
-              updateProgressUI(task);
+          try {
+            if (data.task_id === taskId) {
+                const task = data.data;
+                console.log(`📊 Task ${taskId} update:`, task);
+                
+                // Validate task data before updating UI
+                if (task && typeof task === 'object') {
+                  updateProgressUI(task);
+                } else {
+                  console.warn('⚠️ Invalid task update data received:', data);
+                }
+            }
+          } catch (error) {
+            console.error('❌ Error handling task update:', error);
           }
         });
 
-        // Handle task completion
+        // Handle task completion with enhanced validation
         socket.on('task_completed', function (data) {
-            if (data.task_id === taskId) {
-                console.log(`Task ${taskId} completed!`);
-                handleTaskCompletion(taskId, data.result);
+            try {
+              if (data.task_id === taskId) {
+                  console.log(`✅ Task ${taskId} completed!`, data);
+                  
+                  // Validate completion data
+                  if (data.result) {
+                    handleTaskCompletion(taskId, data.result);
+                  } else {
+                    console.warn('⚠️ Task completed but no result data provided');
+                    handleTaskFailure(taskId, 'No result data received');
+                  }
+              }
+            } catch (error) {
+              console.error('❌ Error handling task completion:', error);
+              handleTaskFailure(taskId, 'Error processing completion: ' + error.message);
             }
         });
 
-        // Handle task failures
+        // Handle task failures with enhanced error reporting
         socket.on('task_failed', function (data) {
-            if (data.task_id === taskId) {
-                console.error(`Task ${taskId} failed: ${data.error}`);
-                handleTaskFailure(taskId, data.error);
+            try {
+              if (data.task_id === taskId) {
+                  console.error(`❌ Task ${taskId} failed:`, data.error);
+                  handleTaskFailure(taskId, data.error || 'Unknown error occurred');
+              }
+            } catch (error) {
+              console.error('❌ Error handling task failure:', error);
+              handleTaskFailure(taskId, 'Error processing failure: ' + error.message);
             }
         });
+
+        // Set up connection monitoring for this task
+        const taskConnectionMonitor = setInterval(() => {
+          if (!socket || !socket.connected) {
+            console.warn('⚠️ Socket disconnected during task processing:', taskId);
+            clearInterval(taskConnectionMonitor);
+            // Could implement reconnection logic here
+          }
+        }, 5000);
+
+        // Clean up monitor when task completes
+        socket.once('task_completed', () => clearInterval(taskConnectionMonitor));
+        socket.once('task_failed', () => clearInterval(taskConnectionMonitor));
+
       } catch (error) {
         console.error('❌ Error in watchTaskProgress:', error);
         // Fallback: hide progress container and show error
@@ -4924,7 +5043,7 @@ async function resendFirebaseOtp() {
         if (progressContainer) {
           progressContainer.style.display = "none";
         }
-        showMessage('uploadMessage', 'Error tracking task progress. Please try again.', "black");
+        showMessage('uploadMessage', 'Connection error: ' + error.message, "red");
       }
   }
   

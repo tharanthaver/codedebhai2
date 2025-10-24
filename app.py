@@ -48,12 +48,27 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
-# Initialize SocketIO with threading for Python 3.13 compatibility
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', 
-                   ping_timeout=60, ping_interval=25, 
-                   engineio_logger=False, socketio_logger=False,
-                   logger=False, always_connect=False,
-                   max_http_buffer_size=1000000)
+# Initialize SocketIO with production-ready configuration
+socketio = SocketIO(app, 
+                   cors_allowed_origins="*", 
+                   async_mode='threading',
+                   # Enhanced timeout settings for production stability
+                   ping_timeout=120,           # Increased from 60 to 120 seconds
+                   ping_interval=30,           # Increased from 25 to 30 seconds
+                   # Connection and transport settings
+                   transports=['websocket', 'polling'],
+                   allow_upgrades=True,
+                   # Buffer and connection limits
+                   max_http_buffer_size=2000000,  # Increased from 1MB to 2MB
+                   # Logging configuration
+                   engineio_logger=False, 
+                   socketio_logger=False,
+                   logger=False, 
+                   # Connection behavior
+                   always_connect=False,
+                   # Additional production settings
+                   compression=True,
+                   cookie=None)
 
 UPLOAD_FOLDER = 'solved_files'
 TEMP_FOLDER = 'temp'
