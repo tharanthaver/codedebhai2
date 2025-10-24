@@ -49,8 +49,11 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for downloads
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
 # Initialize SocketIO with production-optimized configuration
+# Get allowed origins from environment for security
+allowed_origins = os.getenv('CORS_ALLOWED_ORIGINS', 'https://codedebhai2.onrender.com').split(',')
+
 socketio = SocketIO(app, 
-                   cors_allowed_origins="*", 
+                   cors_allowed_origins=allowed_origins, 
                    async_mode='threading',         # Using threading for Python 3.13 compatibility
                    # Production-optimized timeout settings
                    ping_timeout=60,            # Reduced to 60s for faster failure detection
@@ -202,8 +205,12 @@ logging.info(f"Initialized thread pools: Main={max_workers} workers, API={min(20
 active_tasks = {}
 task_progress = {}
 
+# Configure logging level based on environment (production-ready)
+log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
+logging_level = getattr(logging, log_level, logging.INFO)
+
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging_level,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler(), logging.FileHandler('app.log')]
 )
