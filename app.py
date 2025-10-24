@@ -60,14 +60,10 @@ socketio = SocketIO(app,
                    allow_upgrades=False,       # Disable upgrades to prevent connection drops
                    # Enhanced buffer and connection limits
                    max_http_buffer_size=5000000,  # Increased to 5MB for large responses
-                   # Connection management
-                   always_connect=True,        # Ensure persistent connections
                    # Logging configuration
                    engineio_logger=False, 
                    socketio_logger=False,
                    logger=False, 
-                   # Connection behavior
-                   always_connect=False,
                    # Additional production settings
                    compression=True,
                    cookie=None)
