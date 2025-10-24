@@ -570,7 +570,7 @@ class DatabaseHelper:
                 return None
     
     @staticmethod
-    def update_payment_status(gateway_order_id: str, status: str, gateway_payment_id: str = None, webhook_received: bool = True):
+    def update_payment_status(gateway_order_id: str, status: str, gateway_payment_id: str = None):
         """Update payment status using order ID with enhanced logging"""
         try:
             # Use direct connection for consistency
@@ -585,7 +585,7 @@ class DatabaseHelper:
                     WHERE gateway_order_id = %s
                     RETURNING id, user_id, phone_number, gateway_order_id, gateway_payment_id, 
                              amount, credits_added, plan_type, payment_status, created_at, updated_at
-                """, (status, gateway_payment_id, webhook_received, gateway_order_id))
+                """, (status, gateway_payment_id, True, gateway_order_id))
             else:
                 cursor.execute("""
                     UPDATE payments 
@@ -593,7 +593,7 @@ class DatabaseHelper:
                     WHERE gateway_order_id = %s
                     RETURNING id, user_id, phone_number, gateway_order_id, gateway_payment_id, 
                              amount, credits_added, plan_type, payment_status, created_at, updated_at
-                """, (status, webhook_received, gateway_order_id))
+                """, (status, True, gateway_order_id))
             
             row = cursor.fetchone()
             conn.commit()
@@ -614,7 +614,7 @@ class DatabaseHelper:
                     'created_at': row[9].isoformat() if row[9] else None,
                     'updated_at': row[10].isoformat() if row[10] else None
                 }
-                logging.info(f"✅ Payment status updated: Order {gateway_order_id} → {status} (Payment ID: {gateway_payment_id}, Webhook: {webhook_received})")
+                logging.info(f"✅ Payment status updated: Order {gateway_order_id} → {status} (Payment ID: {gateway_payment_id})")
                 return payment_record
             else:
                 logging.warning(f"⚠️ No payment record found to update for order: {gateway_order_id}")

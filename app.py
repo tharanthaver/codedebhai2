@@ -14,7 +14,7 @@ import hashlib
 import json
 import subprocess
 import shutil
-from flask import Flask, request, jsonify, send_file, render_template, session as flask_session, redirect, make_response
+from flask import Flask, request, jsonify, send_file, render_template, session as flask_session, redirect, make_response, url_for
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from real_time_progress import real_time_progress
 from datetime import timedelta, datetime, timezone
@@ -34,9 +34,9 @@ from scheduler_service import rollover_scheduler, add_scheduler_routes
 from terminal_utils import TerminalUtils, clean_terminal_path, take_screenshot, fix_terminal, suppress_extra_output
 from error_handlers import setup_error_handlers
 import anthropic
-import os
 
-load_dotenv()  # This loads the variables from .env into your environment
+# Load environment variables once at the beginning
+load_dotenv()
 
 
 
@@ -77,7 +77,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(TEMP_FOLDER, exist_ok=True)
 
 # Fetch the API key from the environment
-load_dotenv()  # This loads the variables from .env into your environment
 API_KEY = os.getenv('API_KEY')
 if not API_KEY:
     logging.error("API_KEY not found in environment. Please set the API_KEY environment variable.")
@@ -838,7 +837,7 @@ def create_payment_session():
             },
             "order_meta": {
                 "return_url": os.getenv('PAYMENT_RETURN_URL', f"https://codedebhai2.onrender.com/payment-success?order_id={order_id}"),
-                "notify_url": os.getenv('PAYMENT_WEBHOOK_URL', f"https://codedebhai2.onrender.com/payment-webhook")
+                "notify_url": "https://codedebhai2.onrender.com/payment-webhook"
             },
             "order_expiry_time": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
@@ -947,7 +946,6 @@ def create_payment_session():
             "error": "Internal server error"
         }), 500
 
-from flask import request, jsonify, redirect, url_for
 import logging
 
 @app.route('/payment-success')
@@ -955,25 +953,48 @@ def payment_success():
     """Handle successful payment redirect with enhanced session management"""
     order_id = request.args.get('order_id')
     
+    logging.info(f"🎯 Payment success page accessed with order_id: {order_id}")
+    
     # Validate order_id
     if not order_id:
+        logging.error("❌ No order_id provided in payment success redirect")
         return redirect(url_for('index', error='Invalid payment session'))
+    
+    # Find payment record
+    payment_record = db_helper.get_payment_by_gateway_id(order_id)
+    if not payment_record:
+        logging.error(f"❌ No payment record found for order_id: {order_id}")
+        return redirect(url_for('index', error='Payment record not found'))
+    
+    logging.info(f"💳 Found payment record: {payment_record}")
     
     # Check if user is logged in, if not try to refresh session
     current_user = flask_session.get('user')
     if not current_user:
-        # Try to find user from payment record
-        payment_record = db_helper.get_payment_by_gateway_id(order_id)
-        if payment_record:
-            user = db_helper.get_user_by_phone(payment_record['phone_number'])
-            if user:
-                # Restore session
-                flask_session['user'] = user
-                flask_session['authenticated'] = True
-                flask_session.permanent = True
-                current_user = user
-                logging.info(f"Session restored for user {payment_record['phone_number']} from payment record")
+        # Try to restore session from payment record
+        user = db_helper.get_user_by_phone(payment_record['phone_number'])
+        if user:
+            # Restore session
+            flask_session['user'] = user
+            flask_session['authenticated'] = True
+            flask_session.permanent = True
+            current_user = user
+            logging.info(f"🔄 Session restored for user {payment_record['phone_number']} from payment record")
+        else:
+            logging.error(f"❌ User not found for phone: {payment_record['phone_number']}")
+            return redirect(url_for('index', error='User session expired'))
     
+    # Check payment status
+if payment_record['status'] == 'paid':
+    logging.info(f"✅ Payment already processed for order: {order_id}")
+else:
+    logging.info(f"⏳ Payment status is '{payment_record['status']}' for order: {order_id}, waiting for webhook")
+    flask_session['user'] = user
+    flask_session['authenticated'] = True
+    flask_session.permanent = True
+    current_user = user
+    logging.info(f"Session restored for user {payment_record['phone_number']} from payment record")
+
     success_html = f"""
     <!DOCTYPE html>
     <html>
@@ -1254,62 +1275,121 @@ def payment_success():
 
 
 
+def verify_webhook_signature(payload, signature, timestamp, secret_key):
+    """Verify Cashfree webhook signature for security"""
+    try:
+        # Create the signed payload as per Cashfree documentation
+        signed_payload = f"{timestamp}.{payload}"
+        
+        # Generate expected signature
+        expected_signature = hmac.new(
+            secret_key.encode('utf-8'),
+            signed_payload.encode('utf-8'),
+            hashlib.sha256
+        ).digest()
+        
+        # Encode to base64
+        expected_signature_b64 = hashlib.b64encode(expected_signature).decode('utf-8')
+        
+        # Compare signatures
+        return hmac.compare_digest(signature, expected_signature_b64)
+    except Exception as e:
+        logging.error(f"❌ Signature verification error: {e}")
+        return False
+
 @app.route('/payment-webhook', methods=['POST'])
 def payment_webhook():
-    """Handle payment webhook from Cashfree - Enhanced with proper database updates"""
+    """Handle payment webhook from Cashfree - Enhanced with signature verification and proper database updates"""
     try:
-        data = request.get_json()
-        logging.info(f"🔔 Payment webhook received: {json.dumps(data, indent=2)}")
+        # Get raw payload for signature verification
+        raw_payload = request.get_data(as_text=True)
         
-        # Extract webhook data - handle different Cashfree webhook formats
-        order_id = data.get('order_id') or data.get('orderId')
-        order_status = data.get('order_status') or data.get('orderStatus') 
-        payment_id = data.get('cf_payment_id') or data.get('paymentSessionId') or data.get('payment_id')
-        payment_amount = data.get('order_amount') or data.get('amount')
-        payment_method = data.get('payment_method')
-        payment_time = data.get('payment_time') or data.get('created_at')
+        # Get webhook headers for signature verification
+        webhook_signature = request.headers.get('x-webhook-signature')
+        webhook_timestamp = request.headers.get('x-webhook-timestamp')
         
-        logging.info(f"📋 Webhook details - Order: {order_id}, Status: {order_status}, Payment ID: {payment_id}")
+        # Get Cashfree secret key from environment
+        cashfree_secret = os.getenv('CASHFREE_CLIENT_SECRET')
         
-        if order_status == 'PAID':
-            # Find payment record in database
-            payment_record = db_helper.get_payment_by_gateway_id(order_id)
+        # Verify webhook signature for security
+        if webhook_signature and webhook_timestamp and cashfree_secret:
+            if not verify_webhook_signature(raw_payload, webhook_signature, webhook_timestamp, cashfree_secret):
+                logging.error("❌ Webhook signature verification failed")
+                return jsonify({'status': 'error', 'message': 'Invalid signature'}), 401
+            logging.info("✅ Webhook signature verified successfully")
+        else:
+            logging.warning("⚠️ Webhook signature verification skipped - missing headers or secret")
+        
+        # Get the webhook data
+        webhook_data = request.get_json()
+        logging.info(f"🔔 Received webhook data: {webhook_data}")
+        
+        # Handle missing webhook data
+        if not webhook_data:
+            logging.error("❌ No webhook data received")
+            return jsonify({'status': 'error', 'message': 'No webhook data received'}), 400
+        
+        # Extract data from Cashfree webhook format (2025-01-01 version)
+        # Cashfree sends data in nested structure: data.order and data.payment
+        data = webhook_data.get('data', {})
+        order_data = data.get('order', {})
+        payment_data = data.get('payment', {})
+        
+        order_id = order_data.get('order_id')
+        payment_status = payment_data.get('payment_status')  # SUCCESS, FAILED, etc.
+        gateway_payment_id = payment_data.get('cf_payment_id')
+        
+        logging.info(f"📋 Processing webhook - Order: {order_id}, Status: {payment_status}, Payment ID: {gateway_payment_id}")
+        
+        # Handle missing required fields
+        if not order_id:
+            logging.error("❌ Missing order_id in webhook data")
+            return jsonify({'status': 'error', 'message': 'Missing order_id'}), 400
+        
+        # Check if payment is successful
+        if payment_status == 'SUCCESS':
+            logging.info(f"✅ Payment successful for order: {order_id}")
+            
+            payment_record = DatabaseHelper.get_payment_by_gateway_id(order_id)
             if payment_record:
-                logging.info(f"💳 Found payment record: {payment_record['id']} for order {order_id}")
+                logging.info(f"💳 Found payment record: {payment_record}")
                 
-                # Update payment status with additional details
-                updated_payment = db_helper.update_payment_status(order_id, 'paid', payment_id)
-                if updated_payment:
-                    logging.info(f"✅ Payment status updated to 'paid' for order {order_id}")
-                
-                # Add credits to user account
-                current_user = db_helper.get_user_by_phone(payment_record['phone_number'])
+                # Update payment status and add credits
+                current_user = DatabaseHelper.get_user_by_phone(payment_record['phone_number'])
                 if current_user:
                     old_credits = current_user['credits']
                     new_credits = old_credits + payment_record['credits_added']
                     
-                    # Update user credits
-                    updated_user = db_helper.update_user_credits(payment_record['phone_number'], new_credits)
-                    if updated_user:
-                        logging.info(f"💰 Credits updated for {payment_record['phone_number']}: {old_credits} → {new_credits} (+{payment_record['credits_added']})")
+                    logging.info(f"💰 Adding credits - User: {payment_record['phone_number']}, Old: {old_credits}, Adding: {payment_record['credits_added']}, New: {new_credits}")
+                    
+                    updated_user = DatabaseHelper.update_user_credits(payment_record['phone_number'], new_credits)
                     
                     # Update session if user is currently logged in
                     current_session_user = flask_session.get('user')
                     if current_session_user and current_session_user.get('phone_number') == payment_record['phone_number']:
-                        fresh_user_data = db_helper.get_user_by_phone(payment_record['phone_number'])
+                        # Refresh user data from database to ensure session has latest credits
+                        fresh_user_data = DatabaseHelper.get_user_by_phone(payment_record['phone_number'])
                         if fresh_user_data:
                             flask_session['user'] = fresh_user_data
                             logging.info(f"🔄 Session updated for logged-in user {payment_record['phone_number']}")
-                
-                # Log successful payment processing
-                logging.info(f"🎉 Payment successfully processed: Order {order_id}, Amount: ₹{payment_record['amount']/100}, Credits: +{payment_record['credits_added']}")
-                
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Payment processed successfully',
-                    'order_id': order_id,
-                    'credits_added': payment_record['credits_added']
-                }), 200
+                    
+                    # Update payment status to paid with webhook received flag
+                    updated_payment = DatabaseHelper.update_payment_status(order_id, 'paid', gateway_payment_id)
+                    if updated_payment:
+                        logging.info(f"✅ Payment status updated to 'paid' for order {order_id}")
+                    
+                    # Log successful payment processing
+                    logging.info(f"🎉 Payment successfully processed: Order {order_id}, Amount: ₹{payment_record['amount']/100}, Credits: +{payment_record['credits_added']}")
+                    
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Payment processed successfully',
+                        'order_id': order_id,
+                        'credits_added': payment_record['credits_added']
+                    }), 200
+                else:
+                    logging.error(f"❌ User not found for phone: {payment_record['phone_number']}")
+                    return jsonify({'status': 'error', 'message': 'User not found'}), 404
             else:
                 logging.error(f"❌ Payment record not found for order: {order_id}")
                 return jsonify({
@@ -1318,33 +1398,35 @@ def payment_webhook():
                     'order_id': order_id
                 }), 404
         
-        elif order_status in ['FAILED', 'CANCELLED']:
+        elif payment_status == 'FAILED':
             # Handle failed payments
-            payment_record = db_helper.get_payment_by_gateway_id(order_id)
+            logging.info(f"💔 Payment failed for order: {order_id}")
+            payment_record = DatabaseHelper.get_payment_by_gateway_id(order_id)
             if payment_record:
-                db_helper.update_payment_status(order_id, 'failed', payment_id)
-                logging.info(f"💔 Payment failed for order {order_id}")
+                DatabaseHelper.update_payment_status(order_id, 'failed', gateway_payment_id)
+                logging.info(f"❌ Payment status updated to 'failed' for order {order_id}")
             
             return jsonify({
                 'status': 'acknowledged',
-                'message': f'Payment {order_status.lower()}',
+                'message': 'Payment failed',
                 'order_id': order_id
             }), 200
         
         else:
-            # Acknowledge other statuses
-            logging.info(f"ℹ️ Payment status '{order_status}' acknowledged for order {order_id}")
+            # Handle other payment statuses
+            logging.info(f"ℹ️ Unhandled payment status '{payment_status}' for order {order_id}")
             return jsonify({
                 'status': 'acknowledged',
-                'message': f'Status {order_status} recorded',
+                'message': f'Status {payment_status} recorded',
                 'order_id': order_id
             }), 200
         
     except Exception as e:
-        logging.error(f"💥 Payment webhook error: {e}")
+        logging.error(f"💥 Payment webhook error: {str(e)}")
+        logging.error(f"💥 Webhook data was: {request.get_json()}")
         return jsonify({
             'status': 'error', 
-            'message': str(e)
+            'message': 'Internal server error'
         }), 500
 
 # --- Simple OTP Functions (replacing Twilio dependency) ---
