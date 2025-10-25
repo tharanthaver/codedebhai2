@@ -297,7 +297,7 @@ class DatabaseHelper:
         database = os.getenv("SUPABASE_DB_NAME", "postgres")
         user = os.getenv("SUPABASE_DB_USER", "postgres")
         password = os.getenv("SUPABASE_DB_PASSWORD")
-        port = int(os.getenv("SUPABASE_DB_PORT", "5432"))
+        port = int(os.getenv("SUPABASE_DB_PORT", "6543"))  # Default to pooler port
 
         if not host or not password:
             raise RuntimeError("❌ Missing SUPABASE_DB_HOST or SUPABASE_DB_PASSWORD")
