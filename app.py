@@ -875,7 +875,8 @@ def create_payment_session():
             logging.info(f"DEBUG: Raw payment_session_id from Cashfree: '{payment_session_id}'")
             logging.info(f"DEBUG: Payment session ID length: {len(payment_session_id) if payment_session_id else 'None'}")
             
-            # Try to create payment record in database
+            # Try to create payment record in database with enhanced error handling
+            payment_record_created = False
             try:
                 # Get user by phone if available
                 user = None
@@ -902,9 +903,31 @@ def create_payment_session():
                     payment_status='pending'
                 )
                 if payment_record:
-                    logging.info(f"Payment record created for order: {order_id}")
+                    logging.info(f"✅ Payment record created for order: {order_id}")
+                    payment_record_created = True
+                else:
+                    logging.error(f"❌ Payment record creation returned None for order: {order_id}")
             except Exception as db_err:
-                logging.warning(f"Failed to create payment record: {db_err}")
+                logging.error(f"❌ Failed to create payment record for {order_id}: {db_err}")
+            
+            # Store payment info in session as backup for recovery
+            try:
+                if 'pending_payments' not in flask_session:
+                    flask_session['pending_payments'] = {}
+                
+                flask_session['pending_payments'][order_id] = {
+                    'phone_number': customer_phone,
+                    'amount': amount,
+                    'credits_to_add': credits,
+                    'plan_type': plan_type,
+                    'customer_name': customer_name,
+                    'created_at': datetime.now().isoformat(),
+                    'payment_record_created': payment_record_created
+                }
+                flask_session.permanent = True
+                logging.info(f"💾 Payment info stored in session for order: {order_id}")
+            except Exception as session_err:
+                logging.error(f"⚠️ Failed to store payment info in session: {session_err}")
 
             # Use original payment session ID from Cashfree response
             payment_session_id = response_data.get("payment_session_id")
