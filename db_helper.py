@@ -283,27 +283,45 @@ class DatabaseHelper:
         """Get direct PostgreSQL connection to bypass RLS"""
         import psycopg2
         
-        # Prefer pooled transaction URL if present (production)
+        # Try pooled transaction URL first (production)
         connection_string = os.getenv("SUPABASE_POOLER_TRANSACTION_URL")
         if connection_string:
             try:
-                logging.info("🔗 Attempting pooled connection...")
+                logging.info("🔗 Attempting pooled transaction connection...")
                 return psycopg2.connect(connection_string)
             except Exception as e:
-                logging.warning(f"⚠️ Pooled connection failed: {e}")
+                logging.warning(f"⚠️ Pooled transaction connection failed: {e}")
 
-        # Fallback: direct connection via discrete env vars
+        # Try session pooler URL as fallback
+        session_pooler_url = os.getenv("SUPABASE_POOLER_SESSION_URL")
+        if session_pooler_url:
+            try:
+                logging.info("🔗 Attempting session pooler connection...")
+                return psycopg2.connect(session_pooler_url)
+            except Exception as e:
+                logging.warning(f"⚠️ Session pooler connection failed: {e}")
+
+        # Try direct connection URL as final fallback
+        direct_url = os.getenv("SUPABASE_DIRECT_URL")
+        if direct_url:
+            try:
+                logging.info("🔗 Attempting direct connection...")
+                return psycopg2.connect(direct_url)
+            except Exception as e:
+                logging.warning(f"⚠️ Direct connection failed: {e}")
+
+        # Legacy fallback: construct connection from individual env vars
         host = os.getenv("SUPABASE_DB_HOST")
         database = os.getenv("SUPABASE_DB_NAME", "postgres")
         user = os.getenv("SUPABASE_DB_USER", "postgres")
         password = os.getenv("SUPABASE_DB_PASSWORD")
-        port = int(os.getenv("SUPABASE_DB_PORT", "6543"))  # Default to pooler port
+        port = int(os.getenv("SUPABASE_DB_PORT", "6543"))
 
         if not host or not password:
-            raise RuntimeError("❌ Missing SUPABASE_DB_HOST or SUPABASE_DB_PASSWORD")
+            raise RuntimeError("❌ No valid database connection configuration found")
 
         try:
-            logging.info(f"🔗 Attempting direct connection to {host}:{port}")
+            logging.info(f"🔗 Attempting legacy connection to {host}:{port}")
             return psycopg2.connect(
                 host=host,
                 database=database,
@@ -314,9 +332,7 @@ class DatabaseHelper:
                 sslmode='require'
             )
         except Exception as e:
-            logging.error(f"❌ Direct connection failed: {e}")
-            # Try using Supabase client as final fallback
-            logging.info("🔄 Falling back to Supabase client for database operations")
+            logging.error(f"❌ All database connection methods failed. Last error: {e}")
             raise RuntimeError(f"Database connection failed: {e}")
     
     @staticmethod
